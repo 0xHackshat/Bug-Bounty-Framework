@@ -1,4 +1,8 @@
 {
+  "name": "Framework",
+  "type": "folder",
+  "children": [
+    {
   "name": "OSINT Framework",
   "type": "folder",
   "children": [
@@ -6799,5 +6803,13 @@
       "url": "http://www.catb.org/esr/faqs/smart-questions.html"
     }]
   }]
-}
+},
 
+{
+    "name": "Recon Framework",
+    "type": "folder",
+    "children": []
+    }
+
+  ]
+}

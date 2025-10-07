@@ -1,0 +1,11 @@
+{
+  "manifest_version": 3,
+  "name": "Framework",
+  "version": "1.0",
+  "description": "A local D3.js tree viewer extension for personal use.",
+
+  "action": { "default_title": "Open Tree Viewer" },
+  "background": { "service_worker": "background.js" },
+  "permissions": ["tabs"]
+
+}
