@@ -35,7 +35,7 @@ let currentProject = {
 // d3.json("arf.json", function(json) { //replace with below line 
 
 
-d3.json(chrome.runtime.getURL("arf.json"), function (json) {
+d3.json(chrome.runtime.getURL("default.json"), function (json) {
 
    root = json;
    root.x0 = height / 2;
@@ -110,30 +110,72 @@ function update(source) {
          return d._children ? "lightsteelblue" : "#fff";
       });
 
-   // Node text with its anchor; stop propagation when clicking the text/link so it doesn't toggle the node
-   nodeEnter.append('a')
-      .attr("target", "_blank")
-      .attr('xlink:href', function (d) {
-         return d.url;
-      })
-      .append("svg:text")
-      .attr("x", function (d) {
-         return d.children || d._children ? -10 : 10;
-      })
-      .attr("dy", ".35em")
-      .attr("text-anchor", function (d) {
-         return d.children || d._children ? "end" : "start";
-      })
-      .text(function (d) {
-         return d.name;
-      })
-      .style("fill", function (d) {
-         return d.free ? 'black' : '#999';
-      }) // <-- use "fill" correctly
-      .style("fill-opacity", 1e-6)
-      .on("click", function (d) {
-         d3.event.stopPropagation(); // D3 v3 way of stopping group click
-      });
+   // today // Node text with its anchor; stop propagation when clicking the text/link so it doesn't toggle the node
+   // nodeEnter.append('a')
+   //    .attr("target", "_blank")
+   //    .attr('xlink:href', function (d) {
+   //       return d.url;
+   //    })
+   //    .append("svg:text")
+   //    .attr("x", function (d) {
+   //       return d.children || d._children ? -10 : 10;
+   //    })
+   //    .attr("dy", ".35em")
+   //    .attr("text-anchor", function (d) {
+   //       return d.children || d._children ? "end" : "start";
+   //    })
+   //    .text(function (d) {
+   //       return d.name;
+   //    })
+   //    .style("fill", function (d) {
+   //       return d.free ? 'black' : '#999';
+   //    }) // <-- use "fill" correctly
+   //    .style("fill-opacity", 1e-6)
+   //    .on("click", function (d) {
+   //       d3.event.stopPropagation(); // D3 v3 way of stopping group click
+   //    });
+
+   // Node text with an anchor; clicking text toggles 'completed'
+nodeEnter.append('a')
+   .attr("target", "_blank")
+   .attr('xlink:href', function (d) {
+      return d.url;
+   })
+   .append("svg:text")
+   .style("font-family", "Arial, Helvetica, sans-serif")
+   .style("font-size", "15px")
+   .style("fill", "#d7e819ff")
+   .attr("x", function (d) {
+      return d.children || d._children ? -10 : 10;
+   })
+   .attr("dy", ".35em")
+   .attr("text-anchor", function (d) {
+      return d.children || d._children ? "end" : "start";
+   })
+   .text(function (d) {
+      return d.name;
+   })
+   .style("fill", function (d) {
+      return d.free ? 'black' : '#999';
+   })
+   .style("fill-opacity", 1e-6)
+   // show strike-through if completed initially
+   .style("text-decoration", function(d) { return d.completed ? "line-through" : "none"; })
+   .style("cursor", "pointer")
+   .on("click", function (d) {
+      // Prevent group toggle and link navigation when toggling completed
+      d3.event.stopPropagation();
+      d3.event.preventDefault();
+
+      // Toggle completed state and mark project dirty
+      toggleCompleted(d);
+
+      // Re-render the tree starting from this node so visuals update
+      update(d);
+   });
+
+
+// today 
 
    // NOTE icon next to the text (click opens note panel; stops propagation)
    // nodeEnter.append("svg:text")
@@ -154,13 +196,18 @@ function update(source) {
       });
    nodeEnter.append("svg:text")
       .attr("class", "note-icon")
-      .attr("x", 20)
+      .attr("x", 10)
       .attr("dy", ".35em")
-      .text("📌")
-      .style("cursor", "pointer")
-      .style("fill", function (d) {
-         return d.note ? "orange" : "gray";
-      })
+      .text(function (d) {
+   return d.completed ? "✅" : "📌";
+})
+.style("cursor", "pointer")
+.style("fill", function (d) {
+   if (d.completed) return "limegreen";
+   if (d.note) return "orange";
+   return "gray";
+})
+
       .on("click", function (d) {
          d3.event.stopPropagation();
          openNotePanel(d);
@@ -180,8 +227,15 @@ function update(source) {
          return d._children ? "lightsteelblue" : "#fff";
       });
 
+   // nodeUpdate.select("text")
+   //    .style("fill-opacity", 1);
+
+// today
+
    nodeUpdate.select("text")
-      .style("fill-opacity", 1);
+   .style("fill-opacity", 1)
+   .style("text-decoration", function(d) { return d.completed ? "line-through" : "none"; });
+
 
    // Transition exiting nodes to the parent's new position.
    var nodeExit = node.exit().transition()
@@ -265,6 +319,15 @@ function toggle(d) {
       d._children = null;
    }
 }
+
+// Toggle the completed flag on a node and mark project dirty
+function toggleCompleted(node) {
+   node.completed = !node.completed;
+   currentProject.dirty = true;
+}
+
+
+
 //Togle Dark Mode
 function goDark() {
    var element = document.body;
@@ -275,35 +338,35 @@ function goDark() {
 // var notes = JSON.parse(localStorage.getItem("nodeNotes") || "{}");
 var _noteInit = false;
 
-function initNotePanel() {
-   if (_noteInit) return;
-   _noteInit = true;
+// function initNotePanel() {
+//    if (_noteInit) return;
+//    _noteInit = true;
 
-   // Query elements (may be null if you didn't add the HTML snippet)
-   window._notePanel = document.getElementById("note-panel");
-   window._noteTitle = document.getElementById("note-title");
-   window._noteContent = document.getElementById("note-content");
-   window._saveNoteBtn = document.getElementById("save-note");
-   window._closeNoteBtn = document.getElementById("close-note");
+//    // Query elements (may be null if you didn't add the HTML snippet)
+//    window._notePanel = document.getElementById("note-panel");
+//    window._noteTitle = document.getElementById("note-title");
+//    window._noteContent = document.getElementById("note-content");
+//    window._saveNoteBtn = document.getElementById("save-note");
+//    window._closeNoteBtn = document.getElementById("close-note");
 
-   // If no panel in DOM, just return — this prevents exceptions
-   if (!window._notePanel) return;
+//    // If no panel in DOM, just return — this prevents exceptions
+//    if (!window._notePanel) return;
 
-   // Hook save/close safely
-   if (window._saveNoteBtn) {
-      window._saveNoteBtn.addEventListener("click", function () {
-         if (window._currentNode) {
-            notes[window._currentNode.name] = window._noteContent.value;
-            localStorage.setItem("nodeNotes", JSON.stringify(notes));
-         }
-         closeNotePanel();
-      });
-   }
+//    // Hook save/close safely
+//    if (window._saveNoteBtn) {
+//       window._saveNoteBtn.addEventListener("click", function () {
+//          if (window._currentNode) {
+//             notes[window._currentNode.name] = window._noteContent.value;
+//             localStorage.setItem("nodeNotes", JSON.stringify(notes));
+//          }
+//          closeNotePanel();
+//       });
+//    }
 
-   if (window._closeNoteBtn) {
-      window._closeNoteBtn.addEventListener("click", closeNotePanel);
-   }
-}
+//    if (window._closeNoteBtn) {
+//       window._closeNoteBtn.addEventListener("click", closeNotePanel);
+//    }
+// }
 
 function initNotePanel() {
    if (_noteInit) return;
@@ -320,26 +383,24 @@ function initNotePanel() {
    // --- Wire up buttons safely ---
    if (window._saveNoteBtn) {
       window._saveNoteBtn.addEventListener("click", function () {
-         if (window._currentNode) {
-            // Save directly to node
-            window._currentNode.note = window._noteContent.value;
-            currentProject.dirty = true;
+   if (window._currentNode) {
+      window._currentNode.note = window._noteContent.value;
+      currentProject.dirty = true;
 
-            // Update tooltips so note is visible immediately
-            d3.selectAll("title").remove();
-            d3.selectAll("g.node").append("title")
-               .text(function (d) {
-                  return d.note ? d.note : (d.description || "");
-               });
+      d3.selectAll("title").remove();
+      d3.selectAll("g.node").append("title")
+         .text(function (d) {
+            return d.note ? d.note : (d.description || "");
+         });
 
-            // Update icon color
-            d3.selectAll("text.note-icon")
-               .style("fill", function (d) {
-                  return d.note ? "orange" : "gray";
-               });
-         }
-         closeNotePanel();
-      });
+      d3.selectAll("text.note-icon")
+         .style("fill", function (d) {
+            return d.note ? "orange" : "gray";
+         });
+   }
+   closeNotePanel();
+});
+
    }
 
    if (window._closeNoteBtn) {
