@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mind Map</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+:root {
+  --indent-main: 60px;
+  --indent-inner: 20px;
+}
+
+body {
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  background:
+    radial-gradient(#2a2a2a 1px, transparent 3px);
+  background-size: 24px 24px;
+  background-color: #0f0f13;
+  color: #eaeaf0;
+  overflow: hidden;
+}
+
+/* Layout */
+#canvas {
+  flex: 1;
+  padding: 40px;
+  padding-top: 80px;
+  overflow: auto;
+}
+
+#sidebar {
+  width: 320px;
+  background: #16161d;
+  border-left: 1px solid #2b2b36;
+  padding: 16px;
+  display: none;
+  flex-direction: column;
+}
+
+#sidebar textarea {
+  flex: 1;
+  width: 100%;
+  background: #0f0f13;
+  color: #fff;
+  border: 1px solid #333;
+  padding: 10px;
+  resize: none;
+}
+
+/* Top bar */
+#topbar {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 10;
+  display: flex;
+  gap: 10px;
+}
+
+#topbar button {
+  background: #262637;
+  border: 1px solid #3a3a4a;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* Nodes */
+.node-group { position: relative; }
+
+.node {
+  background: #1b1b23;
+  border: 2px solid #3a3a4a;
+  border-radius: 8px;
+  padding: 10px;
+  min-width: 200px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* 👈 split title & buttons */
+}
+
+.node-title {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Hierarchy */
+.children {
+  margin-left: var(--indent-main);
+  padding-left: var(--indent-inner);
+  border-left: 2px solid #c1c1c1;
+}
+
+.child {
+  position: relative;
+  margin: 24px 0;
+}
+
+.child::before {
+  content: "";
+  position: absolute;
+  left: -22px;
+  top: 28px;
+  width: 18px;
+  height: 2px;
+  background: #c1c1c1;
+}
+
+.child::after {
+  content: "";
+  position: absolute;
+  left: -6px;
+  top: 22px;
+  border: 6px solid transparent;
+  border-left-color: #c1c1c1;
+}
+
+/* Levels */
+.level-1 > .node { border-color: #6c6cff; }
+.level-2 > .node { border-color: #4fa3ff; }
+.level-3 > .node { border-color: #4fffbd; }
+
+/* Actions */
+.node-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+
+  justify-content: flex-end;   /* 👈 push buttons to right */
+  margin-left: auto;           /* 👈 ensure right alignment */
+}
+
+
+.icon-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: #262637;
+  border: 1px solid #3a3a4a;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.icon-btn:hover { background: #3b3b5a; }
+.icon-btn.danger:hover {
+  background: #5a2b2b;
+  border-color: #ff5f5f;
+}
+</style>
+</head>
+
+<body>
+
+<div id="topbar">
+  <button onclick="exportData()">Export</button>
+  <button onclick="document.getElementById('fileInput').click()">Load JSON</button>
+</div>
+
+<input
+  type="file"
+  id="fileInput"
+  accept=".json,.js"
+  hidden
+/>
+
+<div id="canvas"></div>
+
+<div id="sidebar">
+  <h3 id="noteTitle"></h3>
+  <textarea id="noteArea"></textarea>
+  <button onclick="saveNote()">Save Note</button>
+</div>
+
+<script>
+/* ---------- Data ---------- */
+let mindMapData = {
+  id: "root",
+  title: "⛑️ AI Workflow",
+  note: "",
+  collapsed: false,
+  children: [
+    {
+      id: "agent",
+      title: "AI Agent",
+      note: "",
+      collapsed: false,
+      children: [
+        {
+          id: "model",
+          title: "Chat Model",
+          note: "",
+          collapsed: false,
+          children: []
+        },
+        {
+          id: "memory",
+          title: "Memory",
+          note: "",
+          collapsed: false,
+          children: []
+        }
+      ]
+    },
+    {
+      id: "logic",
+      title: "Decision Logic",
+      note: "",
+      collapsed: false,
+      children: []
+    }
+  ]
+};
+
+let selectedNode = null;
+
+/* ---------- Render ---------- */
+function render() {
+  const canvas = document.getElementById("canvas");
+  canvas.innerHTML = "";
+  canvas.appendChild(renderNode(mindMapData, 1));
+}
+
+function renderNode(node, level) {
+  const group = document.createElement("div");
+  group.className = `node-group level-${level}`;
+
+  const nodeEl = document.createElement("div");
+  nodeEl.className = "node";
+
+  const title = document.createElement("div");
+  title.className = "node-title";
+  title.textContent = node.title;
+
+  const actions = document.createElement("div");
+  actions.className = "node-actions";
+
+  const toggleBtn = icon("▾", "Expand / Collapse", () => {
+    node.collapsed = !node.collapsed;
+    render();
+  });
+  toggleBtn.textContent = node.collapsed ? "▸" : "▾";
+
+  const noteBtn = icon("📝", "Notes", () => openNotes(node));
+  const addBtn = icon("➕", "Add Child", () => addChild(node));
+
+  actions.append(toggleBtn, noteBtn, addBtn);
+
+  if (node !== mindMapData) {
+    actions.append(icon("🗑️", "Delete", () => deleteNode(mindMapData, node.id), true));
+  }
+
+  nodeEl.append(title, actions);
+  group.appendChild(nodeEl);
+
+  if (!node.collapsed && node.children.length) {
+    const childrenEl = document.createElement("div");
+    childrenEl.className = "children";
+
+    node.children.forEach(child => {
+      const wrap = document.createElement("div");
+      wrap.className = "child";
+      wrap.appendChild(renderNode(child, level + 1));
+      childrenEl.appendChild(wrap);
+    });
+
+    group.appendChild(childrenEl);
+  }
+
+  return group;
+}
+
+function icon(symbol, title, action, danger = false) {
+  const btn = document.createElement("button");
+  btn.className = "icon-btn" + (danger ? " danger" : "");
+  btn.title = title;
+  btn.textContent = symbol;
+  btn.onclick = action;
+  return btn;
+}
+
+/* ---------- Actions ---------- */
+function addChild(node) {
+  const title = prompt("Child node title?");
+  if (!title) return;
+
+  node.children.push({
+    id: crypto.randomUUID(),
+    title,
+    note: "",
+    collapsed: false,
+    children: []
+  });
+  render();
+}
+
+function deleteNode(parent, id) {
+  parent.children = parent.children.filter(c => c.id !== id);
+  parent.children.forEach(c => deleteNode(c, id));
+  render();
+}
+
+/* ---------- Notes ---------- */
+function openNotes(node) {
+  selectedNode = node;
+  document.getElementById("sidebar").style.display = "flex";
+  document.getElementById("noteTitle").textContent = `Notes: ${node.title}`;
+  document.getElementById("noteArea").value = node.note || "";
+}
+
+function saveNote() {
+  if (!selectedNode) return;
+  selectedNode.note = document.getElementById("noteArea").value;
+  alert("Note saved");
+}
+
+/* ---------- Export ---------- */
+function exportData() {
+  const blob = new Blob(
+    [JSON.stringify(mindMapData, null, 2)],
+    { type: "application/json" }
+  );
+
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "mindmap.json";
+  a.click();
+}
+
+/* ---------- Load ---------- */
+document.getElementById("fileInput").addEventListener("change", e => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      let text = reader.result;
+
+      // Support old JS exports
+      if (text.includes("const mindMapData")) {
+        text = text.replace(/^[\s\S]*?=\s*/, "").trim();
+      }
+
+      mindMapData = JSON.parse(text);
+      selectedNode = null;
+      document.getElementById("sidebar").style.display = "none";
+      render();
+    } catch {
+      alert("Invalid file format");
+    }
+  };
+  reader.readAsText(file);
+});
+
+/* ---------- Init ---------- */
+render();
+</script>
+
+</body>
+</html>
