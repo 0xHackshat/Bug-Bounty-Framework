@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Bug Bounty Mind Map</title>
+<style>
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #eef1f6;
+  --panel: #ffffff;
+  --ink: #1b2230;
+  --muted: #677085;
+  --line: #d8deea;
+  --brand: #3458e6;
+  --agent: #6357d9;
+  --model: #2992f0;
+  --memory: #1eac87;
+  --logic: #f0a33a;
+  --tools: #8f63d9;
+  --api: #d95050;
+}
+
+html, body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  overflow: hidden;
+}
+
+.app {
+  width: min(1540px, calc(100vw - 24px));
+  height: calc(100vh - 24px);
+  margin: 12px auto;
+  background: var(--panel);
+  border: 1px solid #d7ddea;
+  border-radius: 14px;
+  box-shadow: 0 14px 40px rgba(20, 35, 70, 0.12);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#topbar {
+  height: 70px;
+  border-bottom: 1px solid #e6ebf4;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.brand-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #6f61df, #2c9af2);
+}
+
+.brand-text {
+  min-width: 0;
+}
+
+.brand-title {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.brand-sub {
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+button {
+  border: 1px solid var(--line);
+  background: #fff;
+  color: #23304c;
+  padding: 8px 12px;
+  border-radius: 9px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+button:hover {
+  background: #f4f7ff;
+  border-color: #bfcbe3;
+}
+
+button.primary {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+
+button.primary:hover {
+  background: #2b4bd2;
+}
+
+#main {
+  min-height: 0;
+  flex: 1;
+  display: flex;
+}
+
+#viewport {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  background:
+    radial-gradient(circle, #d8dfeb 1px, transparent 1px),
+    linear-gradient(#f8fafe, #f8fafe);
+  background-size: 22px 22px, 100% 100%;
+}
+
+#world {
+  position: absolute;
+  inset: 0;
+  transform-origin: 0 0;
+}
+
+#edges {
+  position: absolute;
+  inset: 0;
+  width: 4200px;
+  height: 3000px;
+  pointer-events: none;
+  overflow: visible;
+}
+
+#nodes {
+  position: absolute;
+  inset: 0;
+  width: 4200px;
+  height: 3000px;
+}
+
+.node {
+  position: absolute;
+  --header-h: 38px;
+  --symbol-size: 13px;
+  --icon-size: 24px;
+  --icon-font: 12px;
+  --body-label-size: 13px;
+  --icon-radius: 7px;
+  --action-gap: 5px;
+  --header-gap: 8px;
+  --header-pad-x: 10px;
+  border-radius: 12px;
+  border: 2px solid var(--level-color, #ccd7ec);
+  background: #fff;
+  box-shadow: 0 6px 16px rgba(34, 50, 86, 0.12);
+  user-select: none;
+  overflow: hidden;
+}
+
+.resize-handle {
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+  width: 12px;
+  height: 12px;
+  border-right: 2px solid #8ea2cb;
+  border-bottom: 2px solid #8ea2cb;
+  border-radius: 2px;
+  cursor: nwse-resize;
+  opacity: 0.9;
+}
+
+.resize-handle:hover {
+  border-color: #5f78af;
+}
+
+.node-header {
+  height: var(--header-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--header-gap);
+  padding: 0 var(--header-pad-x) 0 var(--header-pad-x);
+  border-bottom: 1px solid #edf1f8;
+  border-radius: 10px 10px 0 0;
+  background: linear-gradient(180deg, #ffffff, #f8fbff);
+}
+
+.node-symbol {
+  flex: 0 0 auto;
+  font-size: var(--symbol-size);
+  font-weight: 600;
+  color: #1f2c47;
+  line-height: 1;
+}
+
+.node-actions {
+  display: flex;
+  gap: var(--action-gap);
+  flex: 0 0 auto;
+  align-items: center;
+}
+
+.icon {
+  width: var(--icon-size);
+  height: var(--icon-size);
+  border-radius: var(--icon-radius);
+  border: 1px solid #d5def0;
+  background: #f6f9ff;
+  display: grid;
+  place-items: center;
+  font-size: var(--icon-font);
+  font-weight: 600;
+  line-height: 1;
+  padding: 0;
+  cursor: pointer;
+  color: #2c3d63;
+}
+
+.icon:hover {
+  background: #e8f0ff;
+}
+
+.icon.danger:hover {
+  background: #ffeaea;
+  border-color: #edbac0;
+  color: #912f3f;
+}
+
+.node-body {
+  position: relative;
+  width: 100%;
+  height: calc(100% - var(--header-h));
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+}
+
+.collapsed-list {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  flex: 0 0 auto;
+  max-height: 38%;
+  overflow: auto;
+}
+
+.collapsed-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px dashed #9aabd1;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #32456f;
+  padding: 3px 8px;
+  font-size: 11px;
+}
+
+.collapsed-pill button {
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border-radius: 999px;
+  line-height: 1;
+  border: 1px solid #a0b2d8;
+  background: #eff4ff;
+  color: #2e4168;
+}
+
+#collapsedRootTray {
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.node-chip {
+  position: relative;
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  font-size: var(--body-label-size);
+  color: #44526d;
+  background: #f2f5fb;
+  border: 1px solid #dee6f4;
+  padding: 6px 8px;
+  border-radius: 8px;
+  line-height: 1.25;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  outline: none;
+}
+
+.node-chip:focus {
+  background: #ecf3ff;
+}
+
+#sidebar {
+  width: 340px;
+  border-left: 1px solid #e4eaf4;
+  background: #fff;
+  padding: 14px;
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#noteTitle {
+  margin: 0;
+  font-size: 15px;
+}
+
+#noteArea {
+  flex: 1;
+  resize: none;
+  border: 1px solid #d5deee;
+  border-radius: 10px;
+  padding: 10px;
+  font-family: inherit;
+  background: #f9fbff;
+}
+
+#status {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #d5deee;
+  border-radius: 10px;
+  padding: 7px 10px;
+  font-size: 12px;
+  color: #384767;
+}
+
+body[data-theme="dark"] {
+  --bg: #121722;
+  --panel: #1a2130;
+  --ink: #d9e2f3;
+  --muted: #96a7c7;
+  --line: #2e3d59;
+  --brand: #4c71ff;
+}
+
+body[data-theme="dark"] .app {
+  border-color: #2e3c57;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.4);
+}
+
+body[data-theme="dark"] #topbar {
+  border-bottom-color: #2b3955;
+}
+
+body[data-theme="dark"] button {
+  background: #22304a;
+  color: #d9e4ff;
+  border-color: #324767;
+}
+
+body[data-theme="dark"] button:hover {
+  background: #2a3c5e;
+  border-color: #415b86;
+}
+
+body[data-theme="dark"] #viewport {
+  background:
+    radial-gradient(circle, #2f3f5c 1px, transparent 1px),
+    linear-gradient(#1a2232, #1a2232);
+}
+
+body[data-theme="dark"] .node {
+  background: #212c3f;
+  border-color: var(--level-color, #86a1d7);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+}
+
+body[data-theme="dark"] .node-header {
+  border-bottom-color: #31415f;
+  background: linear-gradient(180deg, #27344b, #202b3f);
+}
+
+body[data-theme="dark"] .node-symbol {
+  color: #e2ebff;
+}
+
+body[data-theme="dark"] .node-chip {
+  color: #bfd0f8;
+  background: #2a3852;
+  border-color: #3a4d73;
+}
+
+body[data-theme="dark"] .icon {
+  background: #2a3a57;
+  border-color: #40567f;
+  color: #d2e2ff;
+}
+
+body[data-theme="dark"] .icon:hover {
+  background: #34507a;
+}
+
+body[data-theme="dark"] .resize-handle {
+  border-right-color: #86a1d7;
+  border-bottom-color: #86a1d7;
+}
+
+body[data-theme="dark"] .collapsed-pill {
+  border-color: #4c6189;
+  background: rgba(30, 42, 64, 0.95);
+  color: #d5e2ff;
+}
+
+body[data-theme="dark"] .collapsed-pill button {
+  background: #2f4265;
+  border-color: #4e6998;
+  color: #dbe7ff;
+}
+
+body[data-theme="dark"] #sidebar {
+  background: #1d2637;
+  border-left-color: #2f3d58;
+}
+
+body[data-theme="dark"] #noteArea {
+  background: #1b2435;
+  border-color: #334869;
+  color: #e2ebff;
+}
+
+body[data-theme="dark"] #status {
+  background: rgba(24, 33, 48, 0.95);
+  border-color: #324667;
+  color: #cedbfb;
+}
+
+@media (max-width: 940px) {
+  .app {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    border-radius: 0;
+  }
+
+  #main {
+    flex-direction: column;
+  }
+
+  #sidebar {
+    width: 100%;
+    height: 36vh;
+    border-left: none;
+    border-top: 1px solid #e4eaf4;
+  }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div id="topbar">
+    <!-- <div class="brand"> -->
+      <!-- <div class="brand-dot"></div> -->
+      <!-- <div class="brand-text"> -->
+        <!-- <div class="brand-title">The Mind Palace</div> -->
+        <!-- <div class="brand-sub">Every think in my Mind</div> -->
+      <!-- </div> -->
+    <!-- </div> -->
+
+    <div class="controls">
+      <!-- <button onclick="addNodePrompt()">Add Node</button> -->
+      <!-- <button onclick="addEdgePrompt()">Add Edge</button> -->
+      <button onclick="exportData()">Export</button>
+      <button onclick="loadJsonFromDevice()">Load JSON</button>
+      <button id="themeToggle" onclick="toggleTheme()">Dark Theme</button>
+      <!-- <button onclick="zoomBy(0.12)">Zoom +</button> -->
+      <!-- <button onclick="zoomBy(-0.12)">Zoom -</button> -->
+      <button class="primary" onclick="fitView()">Fit View</button>
+    </div>
+    <div id="collapsedRootTray"></div>
+  </div>
+
+  <input type="file" id="fileInput" accept=".json,.js" hidden>
+
+  <div id="main">
+    <div id="viewport">
+      <div id="world">
+        <svg id="edges"></svg>
+        <div id="nodes"></div>
+      </div>
+      <div id="status"></div>
+    </div>
+
+    <div id="sidebar">
+      <h3 id="noteTitle"></h3>
+      <textarea id="noteArea"></textarea>
+      <button class="primary" onclick="saveNote()">Save Note</button>
+      <button onclick="closeNotes()">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const CONTAINER_HEADER = 38;
+const CONTAINER_PADDING = 14;
+const MIN_NODE_WIDTH = 180;
+const MAX_NODE_WIDTH = 460;
+const MIN_NODE_HEIGHT = 96;
+const MAX_NODE_HEIGHT = 320;
+const BODY_TEXT_PAD_X = 20;
+const BODY_TEXT_PAD_Y = 18;
+const BODY_TEXT_LINE_HEIGHT = 18;
+const HEADER_ESTIMATE = 42;
+const COLLAPSED_ROW_ESTIMATE = 34;
+const measureCanvas = document.createElement("canvas");
+const measureCtx = measureCanvas.getContext("2d");
+
+let graph = {
+  "nodes": [
+    {
+      "id": "0001",
+      "label": "The only Brain Cell",
+      "x": 39,
+      "y": 178,
+      "width": 300,
+      "height": 100,
+      "note": "The only functional Brain Cell",
+      "parentId": null,
+      "collapsed": false
+    }
+  ],
+  "edges": [
+  ]
+};
+
+let selectedNodeId = null;
+let dragging = null;
+let resizing = null;
+let panning = null;
+let currentFileHandle = null;
+let loadedFileName = "ai-workflow-graph.json";
+const view = { x: 0, y: 0, scale: 1 };
+const LEVEL_COLORS = ["#7e73e3", "#56a9f2", "#4acaa8", "#f4bf63", "#ea8f8f", "#8ea2cb"];
+
+function nodeById(id) {
+  return graph.nodes.find(n => n.id === id);
+}
+
+function childrenOf(id) {
+  return graph.nodes.filter(n => n.parentId === id);
+}
+
+function descendantsOf(id) {
+  const result = [];
+  const stack = [id];
+  while (stack.length) {
+    const next = stack.pop();
+    const kids = childrenOf(next);
+    kids.forEach(k => {
+      result.push(k.id);
+      stack.push(k.id);
+    });
+  }
+  return result;
+}
+
+function connectionParentId(node) {
+  if (node.parentId) {
+    return node.parentId;
+  }
+  const incoming = graph.edges.find(e => e.to === node.id && e.from !== node.id);
+  return incoming ? incoming.from : null;
+}
+
+function isNodeVisible(node) {
+  if (node.collapsed) {
+    return false;
+  }
+  if (hasCollapsedUpstream(node.id)) {
+    return false;
+  }
+  return true;
+}
+
+function incomingNodeIds(nodeId) {
+  const ids = [];
+  const node = nodeById(nodeId);
+  if (!node) {
+    return ids;
+  }
+
+  if (node.parentId) {
+    ids.push(node.parentId);
+  }
+
+  graph.edges.forEach(edge => {
+    if (edge.to === nodeId && edge.from !== nodeId) {
+      ids.push(edge.from);
+    }
+  });
+
+  return ids;
+}
+
+function hasCollapsedUpstream(nodeId, visited = new Set()) {
+  if (visited.has(nodeId)) {
+    return false;
+  }
+  visited.add(nodeId);
+
+  const parents = incomingNodeIds(nodeId);
+  for (let i = 0; i < parents.length; i += 1) {
+    const parent = nodeById(parents[i]);
+    if (!parent) {
+      continue;
+    }
+    if (parent.collapsed) {
+      return true;
+    }
+    if (hasCollapsedUpstream(parent.id, visited)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function isParentChainExpanded(node) {
+  let current = node;
+  while (current && current.parentId) {
+    const parent = nodeById(current.parentId);
+    if (!parent) {
+      return true;
+    }
+    if (parent.collapsed) {
+      return false;
+    }
+    current = parent;
+  }
+  return true;
+}
+
+function collapsedNodesForHost(hostId) {
+  return graph.nodes.filter(n => n.collapsed && connectionParentId(n) === hostId);
+}
+
+function visibleNodes() {
+  return graph.nodes.filter(n => isNodeVisible(n));
+}
+
+function hierarchyLevel(nodeId, visited = new Set()) {
+  if (visited.has(nodeId)) {
+    return 0;
+  }
+  visited.add(nodeId);
+
+  const node = nodeById(nodeId);
+  if (!node) {
+    return 0;
+  }
+
+  const parentId = connectionParentId(node);
+  if (!parentId) {
+    return 0;
+  }
+
+  return 1 + hierarchyLevel(parentId, visited);
+}
+
+function levelColor(level) {
+  return LEVEL_COLORS[level % LEVEL_COLORS.length];
+}
+
+function absolutePosition(node) {
+  if (!node.parentId) {
+    return { x: node.x, y: node.y };
+  }
+  const parent = nodeById(node.parentId);
+  if (!parent) {
+    return { x: node.x, y: node.y };
+  }
+  const p = absolutePosition(parent);
+  return {
+    x: p.x + CONTAINER_PADDING + node.x,
+    y: p.y + CONTAINER_HEADER + CONTAINER_PADDING + node.y
+  };
+}
+
+function absoluteRect(node) {
+  const pos = absolutePosition(node);
+  return { x: pos.x, y: pos.y, width: node.width, height: node.height };
+}
+
+function render() {
+  graph.nodes.forEach(node => {
+    if (!node.manualSize) {
+      autoSizeNodeFromLabel(node);
+    }
+  });
+  const root = document.getElementById("nodes");
+  root.innerHTML = "";
+  renderRootCollapsedTray();
+
+  const roots = graph.nodes.filter(n => !n.parentId && isNodeVisible(n));
+  roots.forEach(n => root.appendChild(createNodeEl(n)));
+
+  renderEdges();
+  updateStatus();
+}
+
+function renderRootCollapsedTray() {
+  const tray = document.getElementById("collapsedRootTray");
+  tray.innerHTML = "";
+  const roots = graph.nodes.filter(n => n.collapsed && !connectionParentId(n));
+  roots.forEach(node => tray.appendChild(createCollapsedPill(node)));
+}
+
+function createCollapsedPill(node) {
+  const pill = document.createElement("div");
+  pill.className = "collapsed-pill";
+
+  const expandBtn = document.createElement("button");
+  expandBtn.type = "button";
+  expandBtn.title = "Expand node";
+  expandBtn.textContent = "+";
+  expandBtn.onclick = () => toggleCollapse(node.id);
+
+  const text = document.createElement("span");
+  text.textContent = node.label;
+
+  pill.append(expandBtn, text);
+  return pill;
+}
+
+function createNodeEl(node) {
+  const el = document.createElement("div");
+  el.className = "node";
+  el.style.left = `${node.x}px`;
+  el.style.top = `${node.y}px`;
+  el.style.width = `${node.width}px`;
+  el.style.height = `${node.height}px`;
+  el.style.setProperty("--level-color", levelColor(hierarchyLevel(node.id)));
+
+  const header = document.createElement("div");
+  header.className = "node-header";
+
+  const symbol = document.createElement("div");
+  symbol.className = "node-symbol";
+  symbol.textContent = node.emoji || "◈";
+
+  const actions = document.createElement("div");
+  actions.className = "node-actions";
+
+  const collapseBtn = iconBtn("➖", "Collapse node", () => toggleCollapse(node.id));
+  const noteBtn = iconBtn("📃", "Notes", () => openNotes(node.id));
+  const addBtn = iconBtn("➕", "Add Child", () => addChild(node.id));
+  const delBtn = iconBtn("❌", "Delete", () => deleteNode(node.id), true);
+
+  if (node.id === "agent") {
+    actions.append(collapseBtn, noteBtn, addBtn);
+  } else {
+    actions.append(collapseBtn, noteBtn, addBtn, delBtn);
+  }
+  applyNodeSizing(el, node, actions.childElementCount);
+
+  header.append(symbol, actions);
+
+  const body = document.createElement("div");
+  body.className = "node-body";
+
+  const chip = document.createElement("div");
+  chip.className = "node-chip";
+  chip.textContent = node.label;
+  chip.contentEditable = "true";
+  chip.spellcheck = false;
+  chip.addEventListener("input", () => {
+    node.label = chip.textContent.trim() || "Untitled";
+    if (!node.manualSize) {
+      autoSizeNodeFromLabel(node);
+    }
+    render();
+  });
+  body.appendChild(chip);
+
+  const collapsedChildren = collapsedNodesForHost(node.id).filter(isParentChainExpanded);
+  if (collapsedChildren.length) {
+    const collapsedList = document.createElement("div");
+    collapsedList.className = "collapsed-list";
+    collapsedChildren.forEach(child => collapsedList.appendChild(createCollapsedPill(child)));
+    body.appendChild(collapsedList);
+  }
+
+  el.append(header, body);
+
+  const resizeHandle = document.createElement("div");
+  resizeHandle.className = "resize-handle";
+  resizeHandle.title = "Resize node";
+  resizeHandle.addEventListener("pointerdown", e => {
+    e.preventDefault();
+    e.stopPropagation();
+    startResize(e, node.id);
+  });
+  el.appendChild(resizeHandle);
+
+  header.addEventListener("pointerdown", e => {
+    if (e.target.classList.contains("icon")) {
+      return;
+    }
+    e.preventDefault();
+    startDrag(e, node.id);
+  });
+
+  const kids = childrenOf(node.id).filter(isNodeVisible);
+  kids.forEach(child => body.appendChild(createNodeEl(child)));
+
+  return el;
+}
+
+function applyNodeSizing(el, node, actionCount) {
+  const w = Math.max(80, Number(node.width) || 0);
+  const h = Math.max(48, Number(node.height) || 0);
+  const compact = Math.min(w, h);
+
+  const count = Math.max(1, Number(actionCount) || 1);
+  const headerPad = clamp(Math.round(compact * 0.045), 6, 12);
+  const actionGap = clamp(Math.round(compact * 0.03), 2, 8);
+  const headerGap = clamp(Math.round(compact * 0.035), 4, 10);
+
+  const iconByHeight = clamp(Math.round(h * 0.24), 12, 34);
+  const symbolReserve = clamp(Math.round(compact * 0.3), 14, 22);
+  const iconByWidth = Math.floor((w - (headerPad * 2) - symbolReserve - ((count - 1) * actionGap)) / count);
+  const iconSize = clamp(Math.min(iconByHeight, iconByWidth), 12, 34);
+
+  const iconFont = clamp(Math.round(iconSize * 0.52), 8, 15);
+  const headerH = clamp(Math.round(iconSize + Math.max(8, iconSize * 0.45)), 24, 52);
+  const symbolSize = clamp(Math.round(iconSize * 0.6), 10, 18);
+  const bodyLabelSize = clamp(Math.round(Math.min(w * 0.07, h * 0.22)), 9, 18);
+  const iconRadius = clamp(Math.round(iconSize * 0.28), 5, 11);
+
+  el.style.setProperty("--symbol-size", `${symbolSize}px`);
+  el.style.setProperty("--icon-size", `${iconSize}px`);
+  el.style.setProperty("--icon-font", `${iconFont}px`);
+  el.style.setProperty("--header-h", `${headerH}px`);
+  el.style.setProperty("--body-label-size", `${bodyLabelSize}px`);
+  el.style.setProperty("--icon-radius", `${iconRadius}px`);
+  el.style.setProperty("--action-gap", `${actionGap}px`);
+  el.style.setProperty("--header-gap", `${headerGap}px`);
+  el.style.setProperty("--header-pad-x", `${headerPad}px`);
+}
+
+function autoSizeNodeFromLabel(node) {
+  const text = String(node.label || "Untitled");
+  if (!measureCtx) {
+    node.width = clamp(Number(node.width) || 220, MIN_NODE_WIDTH, MAX_NODE_WIDTH);
+    node.height = clamp(Number(node.height) || 110, MIN_NODE_HEIGHT, MAX_NODE_HEIGHT);
+    return;
+  }
+
+  measureCtx.font = '600 14px "Segoe UI", "Helvetica Neue", Arial, sans-serif';
+  const words = text.split(/\s+/).filter(Boolean);
+  const longestWord = words.reduce((max, w) => Math.max(max, measureCtx.measureText(w).width), 0);
+  const rawLine = measureCtx.measureText(text).width;
+
+  let width = Math.max(longestWord + BODY_TEXT_PAD_X, rawLine + BODY_TEXT_PAD_X);
+  width = clamp(Math.ceil(width), MIN_NODE_WIDTH, MAX_NODE_WIDTH);
+
+  const textMax = Math.max(20, width - BODY_TEXT_PAD_X);
+  const lines = wrapLineCount(text, textMax, measureCtx);
+  const collapsedChildren = collapsedNodesForHost(node.id).length;
+  const collapsedRow = collapsedChildren > 0 ? COLLAPSED_ROW_ESTIMATE : 0;
+
+  let height = HEADER_ESTIMATE + BODY_TEXT_PAD_Y + (lines * BODY_TEXT_LINE_HEIGHT) + collapsedRow;
+  height = clamp(Math.ceil(height), MIN_NODE_HEIGHT, MAX_NODE_HEIGHT);
+
+  node.width = width;
+  node.height = height;
+}
+
+function wrapLineCount(text, maxWidth, ctx) {
+  const chunks = String(text).split(/\n/);
+  let count = 0;
+  chunks.forEach(chunk => {
+    const words = chunk.split(/\s+/).filter(Boolean);
+    if (!words.length) {
+      count += 1;
+      return;
+    }
+    let line = words[0];
+    for (let i = 1; i < words.length; i += 1) {
+      const candidate = `${line} ${words[i]}`;
+      if (ctx.measureText(candidate).width <= maxWidth) {
+        line = candidate;
+      } else {
+        count += 1;
+        line = words[i];
+      }
+    }
+    count += 1;
+  });
+  return Math.max(1, count);
+}
+
+function iconBtn(text, title, fn, danger = false) {
+  const btn = document.createElement("button");
+  btn.className = "icon" + (danger ? " danger" : "");
+  btn.type = "button";
+  btn.title = title;
+  btn.textContent = text;
+  btn.onclick = fn;
+  return btn;
+}
+
+function drawEdgesOnly() {
+  renderEdges();
+  updateStatus();
+}
+
+function renderEdges() {
+  const svg = document.getElementById("edges");
+  const marker = `
+    <defs>
+      <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L9,3 z" fill="#5e6f93"></path>
+      </marker>
+    </defs>
+  `;
+
+  const pieces = [marker];
+
+  graph.edges.forEach((edge, i) => {
+    const from = nodeById(edge.from);
+    const to = nodeById(edge.to);
+    if (!from || !to || !isNodeVisible(from) || !isNodeVisible(to)) {
+      return;
+    }
+
+    const fr = absoluteRect(from);
+    const tr = absoluteRect(to);
+
+    const fromOnRight = tr.x >= fr.x;
+    const sx = fromOnRight ? fr.x + fr.width : fr.x;
+    const sy = fr.y + fr.height / 2;
+    const tx = fromOnRight ? tr.x : tr.x + tr.width;
+    const ty = tr.y + tr.height / 2;
+
+    const dir = tx >= sx ? 1 : -1;
+    const c = Math.max(60, Math.abs(tx - sx) * 0.45);
+    const c1x = sx + dir * c;
+    const c2x = tx - dir * c;
+
+    const midX = (sx + tx) / 2;
+    const midY = (sy + ty) / 2;
+
+    pieces.push(`<path d="M ${sx} ${sy} C ${c1x} ${sy}, ${c2x} ${ty}, ${tx} ${ty}" stroke="#7a86a7" stroke-width="2" fill="none" marker-end="url(#arrow)"></path>`);
+    if (edge.label) {
+      pieces.push(`<text x="${midX}" y="${midY - 8}" fill="#556384" font-size="11" text-anchor="middle">${escapeXml(edge.label)}</text>`);
+    }
+  });
+
+  svg.innerHTML = pieces.join("\n");
+}
+
+function escapeXml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+}
+
+function startDrag(e, nodeId) {
+  const node = nodeById(nodeId);
+  if (!node) {
+    return;
+  }
+
+  dragging = {
+    nodeId,
+    sx: e.clientX,
+    sy: e.clientY,
+    ox: node.x,
+    oy: node.y
+  };
+
+  window.addEventListener("pointermove", onPointerMove);
+  window.addEventListener("pointerup", stopPointerOps);
+}
+
+function startResize(e, nodeId) {
+  const node = nodeById(nodeId);
+  if (!node) {
+    return;
+  }
+
+  resizing = {
+    nodeId,
+    sx: e.clientX,
+    sy: e.clientY,
+    ow: Number(node.width) || MIN_NODE_WIDTH,
+    oh: Number(node.height) || MIN_NODE_HEIGHT
+  };
+
+  window.addEventListener("pointermove", onPointerMove);
+  window.addEventListener("pointerup", stopPointerOps);
+}
+
+function startPan(e) {
+  panning = {
+    sx: e.clientX,
+    sy: e.clientY,
+    ox: view.x,
+    oy: view.y
+  };
+
+  window.addEventListener("pointermove", onPointerMove);
+  window.addEventListener("pointerup", stopPointerOps);
+}
+
+function onPointerMove(e) {
+  if (resizing) {
+    const node = nodeById(resizing.nodeId);
+    if (!node) {
+      return;
+    }
+
+    const dw = (e.clientX - resizing.sx) / view.scale;
+    const dh = (e.clientY - resizing.sy) / view.scale;
+
+    node.width = clamp(Math.round(resizing.ow + dw), MIN_NODE_WIDTH, MAX_NODE_WIDTH);
+    node.height = clamp(Math.round(resizing.oh + dh), MIN_NODE_HEIGHT, MAX_NODE_HEIGHT);
+    node.manualSize = true;
+    render();
+    return;
+  }
+
+  if (dragging) {
+    const node = nodeById(dragging.nodeId);
+    if (!node) {
+      return;
+    }
+
+    const dx = (e.clientX - dragging.sx) / view.scale;
+    const dy = (e.clientY - dragging.sy) / view.scale;
+
+    node.x = Math.round(dragging.ox + dx);
+    node.y = Math.round(dragging.oy + dy);
+
+    if (node.parentId) {
+      const p = nodeById(node.parentId);
+      if (p) {
+        const maxX = Math.max(0, p.width - CONTAINER_PADDING * 2 - node.width);
+        const maxY = Math.max(0, p.height - CONTAINER_HEADER - CONTAINER_PADDING * 2 - node.height);
+        node.x = clamp(node.x, 0, maxX);
+        node.y = clamp(node.y, 0, maxY);
+      }
+    }
+
+    render();
+    return;
+  }
+
+  if (panning) {
+    view.x = panning.ox + (e.clientX - panning.sx);
+    view.y = panning.oy + (e.clientY - panning.sy);
+    applyView();
+  }
+}
+
+function stopPointerOps() {
+  dragging = null;
+  resizing = null;
+  panning = null;
+  window.removeEventListener("pointermove", onPointerMove);
+  window.removeEventListener("pointerup", stopPointerOps);
+}
+
+function clamp(v, min, max) {
+  return Math.max(min, Math.min(max, v));
+}
+
+function applyView() {
+  const world = document.getElementById("world");
+  world.style.transform = `translate(${view.x}px, ${view.y}px) scale(${view.scale})`;
+  updateStatus();
+}
+
+function zoomBy(delta) {
+  const viewport = document.getElementById("viewport");
+  const rect = viewport.getBoundingClientRect();
+  zoomAt(rect.left + rect.width / 2, rect.top + rect.height / 2, delta);
+}
+
+function zoomAt(clientX, clientY, delta) {
+  const viewport = document.getElementById("viewport");
+  const rect = viewport.getBoundingClientRect();
+
+  const localX = clientX - rect.left;
+  const localY = clientY - rect.top;
+
+  const worldX = (localX - view.x) / view.scale;
+  const worldY = (localY - view.y) / view.scale;
+
+  const next = clamp(view.scale + delta, 0.35, 2.8);
+
+  view.x = localX - worldX * next;
+  view.y = localY - worldY * next;
+  view.scale = Number(next.toFixed(3));
+
+  applyView();
+}
+
+function fitView() {
+  const nodes = visibleNodes();
+  if (!nodes.length) {
+    return;
+  }
+
+  let minX = Infinity;
+  let minY = Infinity;
+  let maxX = -Infinity;
+  let maxY = -Infinity;
+
+  nodes.forEach(node => {
+    const r = absoluteRect(node);
+    minX = Math.min(minX, r.x);
+    minY = Math.min(minY, r.y);
+    maxX = Math.max(maxX, r.x + r.width);
+    maxY = Math.max(maxY, r.y + r.height);
+  });
+
+  const viewport = document.getElementById("viewport");
+  const vb = viewport.getBoundingClientRect();
+  const pad = 80;
+
+  const w = Math.max(1, maxX - minX);
+  const h = Math.max(1, maxY - minY);
+
+  const sx = (vb.width - pad) / w;
+  const sy = (vb.height - pad) / h;
+  view.scale = clamp(Math.min(sx, sy), 0.35, 2.8);
+  view.x = (vb.width - w * view.scale) / 2 - minX * view.scale;
+  view.y = (vb.height - h * view.scale) / 2 - minY * view.scale;
+
+  applyView();
+}
+
+function resetView() {
+  view.x = 0;
+  view.y = 0;
+  view.scale = 1;
+  applyView();
+}
+
+function updateStatus() {
+  const status = document.getElementById("status");
+  const zoom = Math.round(view.scale * 100);
+  const collapsedCount = graph.nodes.filter(n => n.collapsed).length;
+  status.textContent = `Nodes: ${visibleNodes().length}/${graph.nodes.length} | Collapsed: ${collapsedCount} | Edges: ${graph.edges.length} | Zoom: ${zoom}%`;
+}
+
+function toggleCollapse(id) {
+  const node = nodeById(id);
+  if (!node) {
+    return;
+  }
+  node.collapsed = !node.collapsed;
+  render();
+}
+
+function addChild(parentId) {
+  createNodeFromPrompt(parentId, true);
+}
+
+function addNodePrompt() {
+  createNodeFromPrompt(null, false);
+}
+
+function createNodeFromPrompt(defaultParentId, lockParent) {
+  const label = prompt("Node label?");
+  if (!label) {
+    return;
+  }
+  const emojiInput = prompt("Emoji for header (optional)", "◈");
+  const emoji = (emojiInput || "").trim() || "◈";
+
+  let parentId = null;
+  let edgeFromNodeId = null;
+  if (lockParent) {
+    edgeFromNodeId = defaultParentId || null;
+    parentId = null;
+  } else {
+    parentId = defaultParentId || null;
+    edgeFromNodeId = parentId;
+  }
+
+  const parent = edgeFromNodeId ? nodeById(edgeFromNodeId) : null;
+  if (edgeFromNodeId && !parent) {
+    alert("Parent ID not found");
+    return;
+  }
+
+  const xDefault = parent ? (Number(parent.x) + Number(parent.width || 0) + 60) : 120;
+  const yDefault = parent ? Number(parent.y) : 120;
+  const wDefault = 220;
+  const hDefault = 110;
+  const rootCount = graph.nodes.filter(n => !n.parentId).length;
+  const x = lockParent ? xDefault : xDefault + (rootCount * 24);
+  const y = lockParent ? yDefault : yDefault + (rootCount * 20);
+
+  const id = `node_${Date.now()}`;
+  graph.nodes.push({
+    id,
+    label,
+    emoji,
+    x: Number.isFinite(x) ? x : xDefault,
+    y: Number.isFinite(y) ? y : yDefault,
+    width: wDefault,
+    height: hDefault,
+    note: "",
+    parentId: lockParent ? null : (parent ? parent.id : null),
+    collapsed: false,
+    manualSize: false
+  });
+
+  if (edgeFromNodeId) {
+    graph.edges.push({ from: edgeFromNodeId, to: id, label: "flow" });
+  }
+
+  render();
+}
+
+function addEdgePrompt() {
+  const from = prompt("From node ID:");
+  const to = prompt("To node ID:");
+  if (!from || !to || !nodeById(from) || !nodeById(to)) {
+    alert("Invalid node IDs");
+    return;
+  }
+  const label = prompt("Edge label:", "flow") || "flow";
+  graph.edges.push({ from, to, label });
+  renderEdges();
+}
+
+function deleteNode(id) {
+  if (!confirm("Delete this node and all nested children?")) {
+    return;
+  }
+
+  const all = [id, ...descendantsOf(id)];
+  graph.nodes = graph.nodes.filter(n => !all.includes(n.id));
+  graph.edges = graph.edges.filter(e => !all.includes(e.from) && !all.includes(e.to));
+
+  if (selectedNodeId && all.includes(selectedNodeId)) {
+    closeNotes();
+  }
+
+  render();
+}
+
+function openNotes(id) {
+  const node = nodeById(id);
+  if (!node) {
+    return;
+  }
+
+  selectedNodeId = id;
+  const sidebar = document.getElementById("sidebar");
+  sidebar.style.display = "flex";
+  document.getElementById("noteTitle").textContent = `Notes: ${node.label} (${node.id})`;
+  document.getElementById("noteArea").value = node.note || "";
+}
+
+function saveNote() {
+  const node = nodeById(selectedNodeId);
+  if (!node) {
+    return;
+  }
+  node.note = document.getElementById("noteArea").value;
+  alert("Note saved");
+}
+
+function closeNotes() {
+  selectedNodeId = null;
+  document.getElementById("sidebar").style.display = "none";
+}
+
+async function exportData() {
+  const json = JSON.stringify(graph, null, 2);
+
+  if (currentFileHandle && typeof currentFileHandle.createWritable === "function") {
+    try {
+      const writable = await currentFileHandle.createWritable();
+      await writable.write(json);
+      await writable.close();
+      alert(`Saved to ${loadedFileName}`);
+      return;
+    } catch {
+      // Fall back to download.
+    }
+  }
+
+  const blob = new Blob([json], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = loadedFileName || "ai-workflow-graph.json";
+  a.click();
+}
+
+function importData(rawText) {
+  let text = rawText;
+
+  if (text.includes("const mindMapData")) {
+    text = text.replace(/^[\s\S]*?=\s*/, "").trim();
+  }
+
+  const parsed = JSON.parse(text);
+
+  if (parsed && Array.isArray(parsed.nodes) && Array.isArray(parsed.edges)) {
+    graph = parsed;
+    normalizeGraph();
+    render();
+    resetView();
+    return;
+  }
+
+  if (parsed && parsed.id && Array.isArray(parsed.children)) {
+    graph = convertTreeToGraph(parsed);
+    normalizeGraph();
+    render();
+    resetView();
+    return;
+  }
+
+  throw new Error("Unsupported format");
+}
+
+function convertTreeToGraph(tree) {
+  const nodes = [];
+  const edges = [];
+  const xGap = 260;
+  const yGap = 120;
+  const yIndexByDepth = new Map();
+
+  function walk(node, depth, parentId) {
+    const yIndex = yIndexByDepth.get(depth) || 0;
+    yIndexByDepth.set(depth, yIndex + 1);
+
+    const id = String(node.id || `node_${Date.now()}_${Math.random()}`);
+    const isRoot = !parentId;
+
+    nodes.push({
+      id,
+      label: node.title || node.label || "Node",
+      x: isRoot ? 120 : depth * xGap,
+      y: isRoot ? 100 : 100 + yIndex * yGap,
+      width: isRoot ? 380 : 200,
+      height: isRoot ? 240 : 90,
+      note: node.note || "",
+      parentId: null,
+      collapsed: false
+    });
+
+    if (parentId) {
+      edges.push({ from: parentId, to: id, label: "flow" });
+    }
+
+    (node.children || []).forEach(child => walk(child, depth + 1, id));
+  }
+
+  walk(tree, 0, null);
+
+  return { nodes, edges };
+}
+
+function normalizeGraph() {
+  graph.nodes = graph.nodes.map(n => ({
+    id: String(n.id || `node_${Date.now()}`),
+    label: String(n.label || n.title || "Untitled"),
+    emoji: String(n.emoji || "◈"),
+    x: Number(n.x) || 0,
+    y: Number(n.y) || 0,
+    width: clamp(Number(n.width) || 220, MIN_NODE_WIDTH, MAX_NODE_WIDTH),
+    height: clamp(Number(n.height) || 110, MIN_NODE_HEIGHT, MAX_NODE_HEIGHT),
+    note: String(n.note || ""),
+    parentId: n.parentId ? String(n.parentId) : null,
+    collapsed: Boolean(n.collapsed),
+    manualSize: Boolean(n.manualSize)
+  }));
+}
+
+function toggleTheme() {
+  const isDark = document.body.getAttribute("data-theme") === "dark";
+  const next = isDark ? "light" : "dark";
+  if (next === "dark") {
+    document.body.setAttribute("data-theme", "dark");
+  } else {
+    document.body.removeAttribute("data-theme");
+  }
+  localStorage.setItem("ai-workflow-theme", next);
+  updateThemeButton();
+}
+
+function updateThemeButton() {
+  const btn = document.getElementById("themeToggle");
+  if (!btn) {
+    return;
+  }
+  const isDark = document.body.getAttribute("data-theme") === "dark";
+  btn.textContent = isDark ? "Light Theme" : "Dark Theme";
+}
+
+async function loadJsonFromDevice() {
+  if (window.showOpenFilePicker) {
+    try {
+      const [handle] = await window.showOpenFilePicker({
+        types: [{
+          description: "JSON files",
+          accept: { "application/json": [".json"] }
+        }],
+        multiple: false
+      });
+
+      const file = await handle.getFile();
+      currentFileHandle = handle;
+      loadedFileName = file.name || "ai-workflow-graph.json";
+      importData(await file.text());
+      closeNotes();
+      return;
+    } catch {
+      return;
+    }
+  }
+
+  document.getElementById("fileInput").click();
+}
+
+document.getElementById("fileInput").addEventListener("change", e => {
+  const file = e.target.files && e.target.files[0];
+  if (!file) {
+    return;
+  }
+  currentFileHandle = null;
+  loadedFileName = file.name || "ai-workflow-graph.json";
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      importData(String(reader.result));
+      closeNotes();
+    } catch (err) {
+      alert(`Invalid file format: ${err.message}`);
+    }
+  };
+  reader.readAsText(file);
+});
+
+const viewport = document.getElementById("viewport");
+viewport.addEventListener("pointerdown", e => {
+  if (e.target.id === "viewport" || e.target.id === "world" || e.target.id === "nodes" || e.target.id === "edges") {
+    startPan(e);
+  }
+});
+
+viewport.addEventListener("wheel", e => {
+  e.preventDefault();
+  const step = e.deltaY > 0 ? -0.08 : 0.08;
+  zoomAt(e.clientX, e.clientY, step);
+}, { passive: false });
+
+normalizeGraph();
+render();
+if (localStorage.getItem("ai-workflow-theme") === "dark") {
+  document.body.setAttribute("data-theme", "dark");
+}
+updateThemeButton();
+resetView();
+</script>
+</body>
+</html>

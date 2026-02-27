@@ -1,0 +1,75 @@
+
+
+// ---------------------------------------------------------------------
+
+
+
+
+// 4.0 Pre-engagement Interactions
+
+// 4.1 Information & Intelligence Gathering
+
+//         4.1.1 Conduct Search Engine Discovery Reconnaissance for Information Leakage
+
+//                 1. Googel Dorking
+
+//                         1. Pagodo
+//                         2. DorkEye
+//                         3. manual or other tools
+
+//                 2. SHODAN
+                
+//                         1. What to look for in shodan 
+
+//                 3. Archive & Wayback Machine
+
+//                          1. What to look for in Archibes
+
+//                  4. recon-ng
+
+//         4.1.2 Fingerprint Web Server
+
+//         4.1.3 Review Webserver Metafiles for Information Leakage
+
+//         4.1.4 Attack Surface "id"entification
+
+//         4.1.5 Review Web Page Content for Information Leakage
+
+//         4.1.6 "id"entify Application Entry Points
+
+//         4.1.7 Map Execution Paths Through Application
+
+//         4.1.8 Fingerprint Web Application Framework
+
+//         4.1.9 Fingerprint Web Application
+
+//         4.1.10 Map Application Architecture
+
+
+// 4.2 Configuration and Deployment Management Testing
+
+// 4.3 "id"entity Management Testing
+
+// 4.4 Authentication Testing
+
+// 4.5 Authorization Testing
+
+// 4.6 Session Management Testing
+
+// 4.7 Input Val"id"ation Testing
+
+// 4.8 Testing for Error Handling
+
+// 4.9 Testing for Weak Cryptography
+
+// 4.10 Business Logic Testing
+
+// 4.11 Client-s"id"e Testing
+
+// 4.12 API Testing
+
+// Exploitation
+
+// Post Exploitation
+
+// Reporting
