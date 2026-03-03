@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bug Bounty Mind Map</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app">
+  <div id="topbar">
+    <!-- <div class="brand"> -->
+      <!-- <div class="brand-dot"></div> -->
+      <!-- <div class="brand-text"> -->
+        <!-- <div class="brand-title">The Bug Bounty Mind Map</div> -->
+        <!-- <div class="brand-sub">Every think in my Mind</div> -->
+      <!-- </div> -->
+    <!-- </div> -->
+
+    <div class="controls">
+      <button id="importJsonBtn">Import JSON</button>
+      <button id="exportJsonBtn">Export JSON</button>
+      <button id="saveNowBtn" class="primary">Save Now</button>
+      <button id="themeToggle">Dark Theme</button>
+      <button id="fitViewBtn">Fit View</button>
+    </div>
+    <div id="collapsedRootTray"></div>
+  </div>
+
+  <div id="main">
+    <input type="file" id="fileInput" accept=".json,.js" hidden>
+    <div id="viewport">
+      <div id="world">
+        <svg id="edges"></svg>
+        <div id="nodes"></div>
+      </div>
+      <div id="status"></div>
+    </div>
+
+    <div id="sidebar">
+      <h3 id="noteTitle"></h3>
+      <textarea id="noteArea"></textarea>
+      <button id="saveNoteBtn" class="primary">Save Note</button>
+      <button id="closeNotesBtn">Close</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "The Bug Bounty Mind Map",
+  "version": "1.0",
+  "description": "Interactive graph editor with local extension storage.",
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [],
+  "action": {
+    "default_title": "Bug Bounty Mind Map",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

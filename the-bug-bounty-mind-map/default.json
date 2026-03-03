@@ -1,0 +1,145 @@
+{
+  "nodes": [
+    {
+      "id": "0001",
+      "label": "Target_name",
+      "emoji": "◈",
+      "x": 39,
+      "y": 178,
+      "width": 180,
+      "height": 96,
+      "note": "The only functional Brain Cell",
+      "parentId": null,
+      "collapsed": false,
+      "manualSize": false
+    },
+    {
+      "id": "node_1772218365943",
+      "label": "Pre-engagement Interactions",
+      "emoji": "◈",
+      "x": 388,
+      "y": 71,
+      "width": 286,
+      "height": 96,
+      "note": "",
+      "parentId": null,
+      "collapsed": false,
+      "manualSize": true
+    },
+    {
+      "id": "node_1772218475150",
+      "label": "Information & Intelligence Gathering",
+      "emoji": "🧐",
+      "x": 384,
+      "y": 234,
+      "width": 342,
+      "height": 100,
+      "note": "",
+      "parentId": null,
+      "collapsed": false,
+      "manualSize": true
+    },
+    {
+      "id": "node_1772218515680",
+      "label": "Search Engine Reconnaissance",
+      "emoji": "🌐",
+      "x": 809,
+      "y": 102,
+      "width": 350,
+      "height": 217,
+      "note": "",
+      "parentId": null,
+      "collapsed": false,
+      "manualSize": true
+    },
+    {
+      "id": "node_1772218544574",
+      "label": "Googel Dorking",
+      "emoji": "◈",
+      "x": 1217,
+      "y": 108,
+      "width": 180,
+      "height": 96,
+      "note": "",
+      "parentId": null,
+      "collapsed": true,
+      "manualSize": false
+    },
+    {
+      "id": "node_1772218624735",
+      "label": "SHODAN Recon",
+      "emoji": "🔍︎",
+      "x": 1274,
+      "y": 241,
+      "width": 180,
+      "height": 96,
+      "note": "",
+      "parentId": null,
+      "collapsed": true,
+      "manualSize": false
+    },
+    {
+      "id": "node_1772218643052",
+      "label": "Archive & Wayback Machine",
+      "emoji": "🔍︎",
+      "x": 1234,
+      "y": 368,
+      "width": 200,
+      "height": 96,
+      "note": "",
+      "parentId": null,
+      "collapsed": true,
+      "manualSize": false
+    },
+    {
+      "id": "node_1772218693179",
+      "label": "Fingerprint Web Server",
+      "emoji": "◈",
+      "x": 842,
+      "y": 371,
+      "width": 180,
+      "height": 96,
+      "note": "",
+      "parentId": null,
+      "collapsed": false,
+      "manualSize": false
+    }
+  ],
+  "edges": [
+    {
+      "from": "0001",
+      "to": "node_1772218365943",
+      "label": "flow"
+    },
+    {
+      "from": "0001",
+      "to": "node_1772218475150",
+      "label": "flow"
+    },
+    {
+      "from": "node_1772218475150",
+      "to": "node_1772218515680",
+      "label": "flow"
+    },
+    {
+      "from": "node_1772218515680",
+      "to": "node_1772218544574",
+      "label": "flow"
+    },
+    {
+      "from": "node_1772218515680",
+      "to": "node_1772218624735",
+      "label": "flow"
+    },
+    {
+      "from": "node_1772218515680",
+      "to": "node_1772218643052",
+      "label": "flow"
+    },
+    {
+      "from": "node_1772218475150",
+      "to": "node_1772218693179",
+      "label": "flow"
+    }
+  ]
+}
