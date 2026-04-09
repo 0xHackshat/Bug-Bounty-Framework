@@ -167,6 +167,7 @@ const view = { x: 0, y: 0, scale: 1 };
 const LEVEL_COLORS = ["#7e73e3", "#56a9f2", "#4acaa8", "#f4bf63", "#ea8f8f", "#8ea2cb"];
 const STORAGE_GRAPH_KEY = "graph";
 const STORAGE_THEME_KEY = "theme";
+const THEME_VARIANT = "test";
 const AUTO_SAVE_MS = 800;
 let lastSavedGraphSnapshot = "";
 
@@ -193,11 +194,19 @@ function descendantsOf(id) {
   return result;
 }
 
+function isManualEdge(edge) {
+  return edge && edge.kind === "manual";
+}
+
+function connectionEdges() {
+  return graph.edges.filter(edge => !isManualEdge(edge));
+}
+
 function connectionParentId(node) {
   if (node.parentId) {
     return node.parentId;
   }
-  const incoming = graph.edges.find(e => e.to === node.id && e.from !== node.id);
+  const incoming = connectionEdges().find(e => e.to === node.id && e.from !== node.id);
   return incoming ? incoming.from : null;
 }
 
@@ -222,7 +231,7 @@ function incomingNodeIds(nodeId) {
     ids.push(node.parentId);
   }
 
-  graph.edges.forEach(edge => {
+  connectionEdges().forEach(edge => {
     if (edge.to === nodeId && edge.from !== nodeId) {
       ids.push(edge.from);
     }
@@ -394,10 +403,12 @@ function createNodeEl(node) {
   const addBtn = iconBtn("➕", "Add Child", () => addChild(node.id));
   const delBtn = iconBtn("❌", "Delete", () => deleteNode(node.id), true);
 
+  const connectBtn = iconBtn("<->", "Manual connection", () => addManualEdge(node.id));
+
   if (node.id === "agent") {
-    actions.append(collapseBtn, noteBtn, addBtn);
+    actions.append(collapseBtn, noteBtn, addBtn, connectBtn);
   } else {
-    actions.append(collapseBtn, noteBtn, addBtn, delBtn);
+    actions.append(collapseBtn, noteBtn, addBtn, connectBtn, delBtn);
   }
   applyNodeSizing(el, node, actions.childElementCount);
 
@@ -682,6 +693,60 @@ function drawEdgesOnly() {
   updateStatus();
 }
 
+function edgeAnchor(rect, side) {
+  if (side === "left") {
+    return { x: rect.x, y: rect.y + rect.height / 2 };
+  }
+  if (side === "right") {
+    return { x: rect.x + rect.width, y: rect.y + rect.height / 2 };
+  }
+  if (side === "top") {
+    return { x: rect.x + rect.width / 2, y: rect.y };
+  }
+  return { x: rect.x + rect.width / 2, y: rect.y + rect.height };
+}
+
+function edgeSides(fromRect, toRect) {
+  const fromCenterX = fromRect.x + fromRect.width / 2;
+  const fromCenterY = fromRect.y + fromRect.height / 2;
+  const toCenterX = toRect.x + toRect.width / 2;
+  const toCenterY = toRect.y + toRect.height / 2;
+  const dx = toCenterX - fromCenterX;
+  const dy = toCenterY - fromCenterY;
+
+  if (Math.abs(dx) >= Math.abs(dy)) {
+    return dx >= 0
+      ? { fromSide: "right", toSide: "left", orientation: "horizontal" }
+      : { fromSide: "left", toSide: "right", orientation: "horizontal" };
+  }
+
+  return dy >= 0
+    ? { fromSide: "bottom", toSide: "top", orientation: "vertical" }
+    : { fromSide: "top", toSide: "bottom", orientation: "vertical" };
+}
+
+function openEdgeLabelEditorFromEvent(e) {
+  const target = e.target;
+  if (!target || typeof target.getAttribute !== "function") {
+    return false;
+  }
+
+  const idxText = target.getAttribute("data-edge-index");
+  if (idxText === null) {
+    return false;
+  }
+
+  const idx = Number(idxText);
+  if (!Number.isFinite(idx)) {
+    return false;
+  }
+
+  e.preventDefault();
+  e.stopPropagation();
+  startFloatingEdgeLabelEditor(idx, e.clientX, e.clientY);
+  return true;
+}
+
 function renderEdges() {
   const svg = document.getElementById("edges");
   const marker = `
@@ -704,23 +769,47 @@ function renderEdges() {
     const fr = absoluteRect(from);
     const tr = absoluteRect(to);
 
-    const fromOnRight = tr.x >= fr.x;
-    const sx = fromOnRight ? fr.x + fr.width : fr.x;
-    const sy = fr.y + fr.height / 2;
-    const tx = fromOnRight ? tr.x : tr.x + tr.width;
-    const ty = tr.y + tr.height / 2;
+    const anchorSides = edgeSides(fr, tr);
+    const start = edgeAnchor(fr, anchorSides.fromSide);
+    const end = edgeAnchor(tr, anchorSides.toSide);
+    const sx = start.x;
+    const sy = start.y;
+    const tx = end.x;
+    const ty = end.y;
 
-    const dir = tx >= sx ? 1 : -1;
-    const c = Math.max(60, Math.abs(tx - sx) * 0.45);
-    const c1x = sx + dir * c;
-    const c2x = tx - dir * c;
+    let c1x = sx;
+    let c1y = sy;
+    let c2x = tx;
+    let c2y = ty;
+    if (anchorSides.orientation === "horizontal") {
+      const dir = tx >= sx ? 1 : -1;
+      const c = Math.max(60, Math.abs(tx - sx) * 0.45);
+      c1x = sx + dir * c;
+      c2x = tx - dir * c;
+    } else {
+      const dir = ty >= sy ? 1 : -1;
+      const c = Math.max(60, Math.abs(ty - sy) * 0.45);
+      c1y = sy + dir * c;
+      c2y = ty - dir * c;
+    }
 
     const midX = (sx + tx) / 2;
     const midY = (sy + ty) / 2;
+    const isManual = isManualEdge(edge);
+    const stroke = isManual ? "#9ea7ba" : "#7a86a7";
+    const dash = isManualEdge(edge) ? ' stroke-dasharray="7 5"' : "";
+    const markerEnd = isManual ? "" : ' marker-end="url(#arrow)"';
+    const title = isManual ? "Click label to edit. Click - to delete manual connection" : "Click to edit connection label";
 
-    pieces.push(`<path data-edge-index="${i}" d="M ${sx} ${sy} C ${c1x} ${sy}, ${c2x} ${ty}, ${tx} ${ty}" stroke="#7a86a7" stroke-width="2" fill="none" marker-end="url(#arrow)"></path>`);
+    pieces.push(`<path data-edge-index="${i}" d="M ${sx} ${sy} C ${c1x} ${c1y}, ${c2x} ${c2y}, ${tx} ${ty}" stroke="${stroke}" stroke-width="2" fill="none"${dash}${markerEnd} style="cursor:text" title="${title}"></path>`);
     if (edge.label) {
-      pieces.push(`<text data-edge-index="${i}" x="${midX}" y="${midY - 8}" fill="#556384" font-size="11" text-anchor="middle">${escapeXml(edge.label)}</text>`);
+      pieces.push(`<text data-edge-index="${i}" x="${midX}" y="${midY - 8}" fill="#556384" font-size="11" text-anchor="middle" style="cursor:text" title="${title}">${escapeXml(edge.label)}</text>`);
+    }
+    if (isManual) {
+      pieces.push(`<g data-edge-delete="${i}" style="cursor:pointer" title="Delete manual connection">
+        <circle data-edge-delete="${i}" cx="${midX + 18}" cy="${midY - 12}" r="8" fill="#2a2a2a" stroke="#8f96a3" stroke-width="1.5"></circle>
+        <text data-edge-delete="${i}" x="${midX + 18}" y="${midY - 8.5}" fill="#f1f1f1" font-size="12" font-weight="700" text-anchor="middle">-</text>
+      </g>`);
     }
   });
 
@@ -943,6 +1032,61 @@ function addNodePrompt() {
   createNodeFromPrompt(null, false);
 }
 
+function promptEdgeLabel(message, defaultValue = "") {
+  const value = prompt(message, defaultValue);
+  if (value === null) {
+    return null;
+  }
+  return value.trim();
+}
+
+function addManualEdge(nodeId) {
+  const node = nodeById(nodeId);
+  if (!node) {
+    return;
+  }
+
+  const otherId = (prompt(`Connect "${node.label}" with node ID:`) || "").trim();
+  if (!otherId) {
+    return;
+  }
+
+  const other = nodeById(otherId);
+  if (!other || other.id === nodeId) {
+    alert("Invalid node ID");
+    return;
+  }
+
+  const direction = (prompt(`Direction for manual link:\n1 = ${node.id} -> ${other.id}\n2 = ${other.id} -> ${node.id}`, "1") || "").trim();
+  if (direction !== "1" && direction !== "2") {
+    return;
+  }
+
+  const label = promptEdgeLabel("Manual connection label (optional):", "");
+  if (label === null) {
+    return;
+  }
+
+  const fromId = direction === "1" ? nodeId : otherId;
+  const toId = direction === "1" ? otherId : nodeId;
+  graph.edges.push({ from: fromId, to: toId, label, kind: "manual" });
+  drawEdgesOnly();
+}
+
+function deleteManualEdge(edgeIndex) {
+  const edge = graph.edges[edgeIndex];
+  if (!edge || !isManualEdge(edge)) {
+    return;
+  }
+
+  if (!confirm(`Delete manual connection${edge.label ? ` "${edge.label}"` : ""}?`)) {
+    return;
+  }
+
+  graph.edges.splice(edgeIndex, 1);
+  drawEdgesOnly();
+}
+
 function createNodeFromPrompt(defaultParentId, lockParent) {
   const label = prompt("Node label?");
   if (!label) {
@@ -991,7 +1135,7 @@ function createNodeFromPrompt(defaultParentId, lockParent) {
   });
 
   if (edgeFromNodeId) {
-    graph.edges.push({ from: edgeFromNodeId, to: id, label: "flow" });
+    graph.edges.push({ from: edgeFromNodeId, to: id, label: "flow", kind: "flow" });
   }
 
   render();
@@ -1005,8 +1149,8 @@ function addEdgePrompt() {
     return;
   }
   const label = prompt("Edge label:", "flow") || "flow";
-  graph.edges.push({ from, to, label });
-  renderEdges();
+  graph.edges.push({ from, to, label, kind: "flow" });
+  drawEdgesOnly();
 }
 
 function deleteNode(id) {
@@ -1107,7 +1251,7 @@ function convertTreeToGraph(tree) {
     });
 
     if (parentId) {
-      edges.push({ from: parentId, to: id, label: "flow" });
+      edges.push({ from: parentId, to: id, label: "flow", kind: "flow" });
     }
 
     (node.children || []).forEach(child => walk(child, depth + 1, id));
@@ -1119,6 +1263,13 @@ function convertTreeToGraph(tree) {
 }
 
 function normalizeGraph() {
+  graph.edges = (Array.isArray(graph.edges) ? graph.edges : []).map(e => ({
+    from: String(e.from || ""),
+    to: String(e.to || ""),
+    label: typeof e.label === "string" ? e.label : String(e.label || ""),
+    kind: e.kind === "manual" ? "manual" : "flow"
+  })).filter(e => e.from && e.to);
+
   graph.nodes = graph.nodes.map(n => ({
     id: String(n.id || `node_${Date.now()}`),
     label: String(n.label || n.title || "Untitled"),
@@ -1266,25 +1417,30 @@ function startAutoSaveLoop() {
 
 const viewport = document.getElementById("viewport");
 const edgesSvg = document.getElementById("edges");
-edgesSvg.addEventListener("dblclick", e => {
+edgesSvg.addEventListener("click", e => {
   const target = e.target;
   if (!target || typeof target.getAttribute !== "function") {
     return;
   }
 
-  const idxText = target.getAttribute("data-edge-index");
-  if (idxText === null) {
+  const deleteIdxText = target.getAttribute("data-edge-delete");
+  if (deleteIdxText !== null) {
+    const deleteIdx = Number(deleteIdxText);
+    if (Number.isFinite(deleteIdx)) {
+      e.preventDefault();
+      e.stopPropagation();
+      deleteManualEdge(deleteIdx);
+    }
     return;
   }
 
-  const idx = Number(idxText);
-  if (!Number.isFinite(idx)) {
+  if (target.tagName !== "text") {
     return;
   }
-
-  e.preventDefault();
-  e.stopPropagation();
-  startFloatingEdgeLabelEditor(idx, e.clientX, e.clientY);
+  openEdgeLabelEditorFromEvent(e);
+});
+edgesSvg.addEventListener("dblclick", e => {
+  openEdgeLabelEditorFromEvent(e);
 });
 viewport.addEventListener("pointerdown", e => {
   if (e.target.id === "viewport" || e.target.id === "world" || e.target.id === "nodes" || e.target.id === "edges") {
@@ -1300,6 +1456,7 @@ viewport.addEventListener("wheel", e => {
 
 async function initializeAppState() {
   setupUiEvents();
+  document.body.setAttribute("data-theme-variant", THEME_VARIANT);
 
   const themeResult = await chrome.storage.local.get(STORAGE_THEME_KEY);
   if (themeResult && themeResult[STORAGE_THEME_KEY] === "dark") {
