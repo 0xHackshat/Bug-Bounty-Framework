@@ -161,6 +161,15 @@ button.primary:hover {
   background: var(--button-primary-hover);
 }
 
+.zoom-btn {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  font-size: 18px;
+  line-height: 1;
+  font-weight: 700;
+}
+
 #main {
   min-height: 0;
   flex: 1;
@@ -216,6 +225,11 @@ button.primary:hover {
   box-shadow: var(--node-shadow);
   user-select: none;
   overflow: hidden;
+}
+
+.node.is-dragging {
+  box-shadow: none;
+  will-change: left, top, width, height;
 }
 
 .resize-handle {

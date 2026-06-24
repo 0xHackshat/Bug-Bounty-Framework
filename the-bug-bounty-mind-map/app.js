@@ -10,6 +10,7 @@ const BODY_TEXT_PAD_Y = 18;
 const BODY_TEXT_LINE_HEIGHT = 18;
 const HEADER_ESTIMATE = 42;
 const COLLAPSED_ROW_ESTIMATE = 34;
+const WHEEL_LINE_PX = 16;
 const measureCanvas = document.createElement("canvas");
 const measureCtx = measureCanvas.getContext("2d");
 
@@ -170,14 +171,76 @@ const STORAGE_THEME_KEY = "theme";
 const THEME_VARIANT = "test";
 const AUTO_SAVE_MS = 800;
 let lastSavedGraphSnapshot = "";
+let pendingPointerFrame = false;
+const graphIndex = {
+  nodesById: new Map(),
+  childrenByParentId: new Map(),
+  incomingByNodeId: new Map(),
+  edgesByNodeId: new Map(),
+  collapsedByHostId: new Map(),
+  connectionEdges: []
+};
+const renderState = {
+  nodeEls: new Map(),
+  edgeEls: new Map(),
+  visibleIds: new Set(),
+  visibleNodes: []
+};
 
+function rebuildGraphIndexes() {
+  graphIndex.nodesById = new Map();
+  graphIndex.childrenByParentId = new Map();
+  graphIndex.incomingByNodeId = new Map();
+  graphIndex.edgesByNodeId = new Map();
+  graphIndex.collapsedByHostId = new Map();
+  graphIndex.connectionEdges = [];
+
+  graph.nodes.forEach(node => {
+    graphIndex.nodesById.set(node.id, node);
+    const parentKey = node.parentId || "__root__";
+    if (!graphIndex.childrenByParentId.has(parentKey)) {
+      graphIndex.childrenByParentId.set(parentKey, []);
+    }
+    graphIndex.childrenByParentId.get(parentKey).push(node);
+  });
+
+  graph.edges.forEach((edge, index) => {
+    if (!isManualEdge(edge)) {
+      graphIndex.connectionEdges.push(edge);
+      if (edge.to !== edge.from) {
+        if (!graphIndex.incomingByNodeId.has(edge.to)) {
+          graphIndex.incomingByNodeId.set(edge.to, []);
+        }
+        graphIndex.incomingByNodeId.get(edge.to).push(edge.from);
+      }
+    }
+
+    [edge.from, edge.to].forEach(nodeId => {
+      if (!graphIndex.edgesByNodeId.has(nodeId)) {
+        graphIndex.edgesByNodeId.set(nodeId, new Set());
+      }
+      graphIndex.edgesByNodeId.get(nodeId).add(index);
+    });
+  });
+
+  graph.nodes.forEach(node => {
+    if (!node.collapsed) {
+      return;
+    }
+    const hostId = connectionParentId(node) || "__root__";
+    if (!graphIndex.collapsedByHostId.has(hostId)) {
+      graphIndex.collapsedByHostId.set(hostId, []);
+    }
+    graphIndex.collapsedByHostId.get(hostId).push(node);
+  });
+}
 
 function nodeById(id) {
-  return graph.nodes.find(n => n.id === id);
+  return graphIndex.nodesById.get(id);
 }
 
 function childrenOf(id) {
-  return graph.nodes.filter(n => n.parentId === id);
+  return graphIndex.childrenByParentId.get(id) || [];
 }
 
 function descendantsOf(id) {
@@ -199,15 +262,15 @@ function isManualEdge(edge) {
 }
 
 function connectionEdges() {
-  return graph.edges.filter(edge => !isManualEdge(edge));
+  return graphIndex.connectionEdges;
 }
 
 function connectionParentId(node) {
   if (node.parentId) {
     return node.parentId;
   }
-  const incoming = connectionEdges().find(e => e.to === node.id && e.from !== node.id);
-  return incoming ? incoming.from : null;
+  const incoming = graphIndex.incomingByNodeId.get(node.id);
+  return incoming && incoming.length ? incoming[0] : null;
 }
 
 function isNodeVisible(node) {
@@ -231,11 +294,7 @@ function incomingNodeIds(nodeId) {
     ids.push(node.parentId);
   }
 
-  connectionEdges().forEach(edge => {
-    if (edge.to === nodeId && edge.from !== nodeId) {
-      ids.push(edge.from);
-    }
-  });
+  (graphIndex.incomingByNodeId.get(nodeId) || []).forEach(id => ids.push(id));
 
   return ids;
 }
@@ -279,10 +338,13 @@ function isParentChainExpanded(node) {
 }
 
 function collapsedNodesForHost(hostId) {
-  return graph.nodes.filter(n => n.collapsed && connectionParentId(n) === hostId);
+  return graphIndex.collapsedByHostId.get(hostId || "__root__") || [];
 }
 
 function visibleNodes() {
+  if (renderState.visibleNodes.length) {
+    return renderState.visibleNodes;
+  }
   return graph.nodes.filter(n => isNodeVisible(n));
 }
 
@@ -330,16 +392,25 @@ function absoluteRect(node) {
 }
 
 function render() {
+  rebuildGraphIndexes();
+  renderState.nodeEls.clear();
+  renderState.edgeEls.clear();
+  renderState.visibleNodes = [];
+  renderState.visibleIds = new Set();
+
   graph.nodes.forEach(node => {
     if (!node.manualSize) {
       autoSizeNodeFromLabel(node);
     }
   });
+  renderState.visibleNodes = graph.nodes.filter(n => isNodeVisible(n));
+  renderState.visibleIds = new Set(renderState.visibleNodes.map(n => n.id));
+
   const root = document.getElementById("nodes");
   root.innerHTML = "";
   renderRootCollapsedTray();
 
-  const roots = graph.nodes.filter(n => !n.parentId && isNodeVisible(n));
+  const roots = graph.nodes.filter(n => !n.parentId && renderState.visibleIds.has(n.id));
   roots.forEach(n => root.appendChild(createNodeEl(n)));
 
   renderEdges();
@@ -349,7 +420,7 @@ function render() {
 function renderRootCollapsedTray() {
   const tray = document.getElementById("collapsedRootTray");
   tray.innerHTML = "";
-  const roots = graph.nodes.filter(n => n.collapsed && !connectionParentId(n));
+  const roots = collapsedNodesForHost(null);
   roots.forEach(node => tray.appendChild(createCollapsedPill(node)));
 }
 
@@ -373,11 +444,13 @@ function createCollapsedPill(node) {
 function createNodeEl(node) {
   const el = document.createElement("div");
   el.className = "node";
+  el.dataset.nodeId = node.id;
   el.style.left = `${node.x}px`;
   el.style.top = `${node.y}px`;
   el.style.width = `${node.width}px`;
   el.style.height = `${node.height}px`;
   el.style.setProperty("--level-color", levelColor(hierarchyLevel(node.id)));
+  renderState.nodeEls.set(node.id, el);
 
   const header = document.createElement("div");
   header.className = "node-header";
@@ -462,7 +535,7 @@ function createNodeEl(node) {
     startDrag(e, node.id);
   });
 
-  const kids = childrenOf(node.id).filter(isNodeVisible);
+  const kids = childrenOf(node.id).filter(child => renderState.visibleIds.has(child.id));
   kids.forEach(child => body.appendChild(createNodeEl(child)));
 
   return el;
@@ -689,6 +762,9 @@ function startFloatingEdgeLabelEditor(edgeIndex, clientX, clientY) {
 }
 
 function drawEdgesOnly() {
+  rebuildGraphIndexes();
+  renderState.visibleNodes = graph.nodes.filter(n => isNodeVisible(n));
+  renderState.visibleIds = new Set(renderState.visibleNodes.map(n => n.id));
   renderEdges();
   updateStatus();
 }
@@ -747,6 +823,47 @@ function openEdgeLabelEditorFromEvent(e) {
   return true;
 }
 
+function edgeGeometry(edge) {
+  const from = nodeById(edge.from);
+  const to = nodeById(edge.to);
+  if (!from || !to || !renderState.visibleIds.has(from.id) || !renderState.visibleIds.has(to.id)) {
+    return null;
+  }
+
+  const fr = absoluteRect(from);
+  const tr = absoluteRect(to);
+
+  const anchorSides = edgeSides(fr, tr);
+  const start = edgeAnchor(fr, anchorSides.fromSide);
+  const end = edgeAnchor(tr, anchorSides.toSide);
+  const sx = start.x;
+  const sy = start.y;
+  const tx = end.x;
+  const ty = end.y;
+
+  let c1x = sx;
+  let c1y = sy;
+  let c2x = tx;
+  let c2y = ty;
+  if (anchorSides.orientation === "horizontal") {
+    const dir = tx >= sx ? 1 : -1;
+    const c = Math.max(60, Math.abs(tx - sx) * 0.45);
+    c1x = sx + dir * c;
+    c2x = tx - dir * c;
+  } else {
+    const dir = ty >= sy ? 1 : -1;
+    const c = Math.max(60, Math.abs(ty - sy) * 0.45);
+    c1y = sy + dir * c;
+    c2y = ty - dir * c;
+  }
+
+  return {
+    path: `M ${sx} ${sy} C ${c1x} ${c1y}, ${c2x} ${c2y}, ${tx} ${ty}`,
+    midX: (sx + tx) / 2,
+    midY: (sy + ty) / 2
+  };
+}
+
 function renderEdges() {
   const svg = document.getElementById("edges");
   const marker = `
@@ -760,60 +877,89 @@ function renderEdges() {
   const pieces = [marker];
 
   graph.edges.forEach((edge, i) => {
-    const from = nodeById(edge.from);
-    const to = nodeById(edge.to);
-    if (!from || !to || !isNodeVisible(from) || !isNodeVisible(to)) {
+    const geometry = edgeGeometry(edge);
+    if (!geometry) {
       return;
     }
-
-    const fr = absoluteRect(from);
-    const tr = absoluteRect(to);
-
-    const anchorSides = edgeSides(fr, tr);
-    const start = edgeAnchor(fr, anchorSides.fromSide);
-    const end = edgeAnchor(tr, anchorSides.toSide);
-    const sx = start.x;
-    const sy = start.y;
-    const tx = end.x;
-    const ty = end.y;
-
-    let c1x = sx;
-    let c1y = sy;
-    let c2x = tx;
-    let c2y = ty;
-    if (anchorSides.orientation === "horizontal") {
-      const dir = tx >= sx ? 1 : -1;
-      const c = Math.max(60, Math.abs(tx - sx) * 0.45);
-      c1x = sx + dir * c;
-      c2x = tx - dir * c;
-    } else {
-      const dir = ty >= sy ? 1 : -1;
-      const c = Math.max(60, Math.abs(ty - sy) * 0.45);
-      c1y = sy + dir * c;
-      c2y = ty - dir * c;
-    }
-
-    const midX = (sx + tx) / 2;
-    const midY = (sy + ty) / 2;
     const isManual = isManualEdge(edge);
     const stroke = isManual ? "#9ea7ba" : "#7a86a7";
     const dash = isManualEdge(edge) ? ' stroke-dasharray="7 5"' : "";
     const markerEnd = isManual ? "" : ' marker-end="url(#arrow)"';
     const title = isManual ? "Click label to edit. Click - to delete manual connection" : "Click to edit connection label";
 
-    pieces.push(`<path data-edge-index="${i}" d="M ${sx} ${sy} C ${c1x} ${c1y}, ${c2x} ${c2y}, ${tx} ${ty}" stroke="${stroke}" stroke-width="2" fill="none"${dash}${markerEnd} style="cursor:text" title="${title}"></path>`);
+    pieces.push(`<path data-edge-index="${i}" d="${geometry.path}" stroke="${stroke}" stroke-width="2" fill="none"${dash}${markerEnd} style="cursor:text" title="${title}"></path>`);
     if (edge.label) {
-      pieces.push(`<text data-edge-index="${i}" x="${midX}" y="${midY - 8}" fill="#556384" font-size="11" text-anchor="middle" style="cursor:text" title="${title}">${escapeXml(edge.label)}</text>`);
+      pieces.push(`<text data-edge-index="${i}" x="${geometry.midX}" y="${geometry.midY - 8}" fill="#556384" font-size="11" text-anchor="middle" style="cursor:text" title="${title}">${escapeXml(edge.label)}</text>`);
     }
     if (isManual) {
       pieces.push(`<g data-edge-delete="${i}" style="cursor:pointer" title="Delete manual connection">
-        <circle data-edge-delete="${i}" cx="${midX + 18}" cy="${midY - 12}" r="8" fill="#2a2a2a" stroke="#8f96a3" stroke-width="1.5"></circle>
-        <text data-edge-delete="${i}" x="${midX + 18}" y="${midY - 8.5}" fill="#f1f1f1" font-size="12" font-weight="700" text-anchor="middle">-</text>
+        <circle data-edge-delete="${i}" cx="${geometry.midX + 18}" cy="${geometry.midY - 12}" r="8" fill="#2a2a2a" stroke="#8f96a3" stroke-width="1.5"></circle>
+        <text data-edge-delete="${i}" x="${geometry.midX + 18}" y="${geometry.midY - 8.5}" fill="#f1f1f1" font-size="12" font-weight="700" text-anchor="middle">-</text>
       </g>`);
     }
   });
 
   svg.innerHTML = pieces.join("\n");
+  cacheRenderedEdges(svg);
+}
+
+function cacheRenderedEdges(svg) {
+  renderState.edgeEls.clear();
+  svg.querySelectorAll("[data-edge-index], [data-edge-delete]").forEach(el => {
+    const indexText = el.getAttribute("data-edge-index") || el.getAttribute("data-edge-delete");
+    const index = Number(indexText);
+    if (!Number.isFinite(index)) {
+      return;
+    }
+    if (!renderState.edgeEls.has(index)) {
+      renderState.edgeEls.set(index, {});
+    }
+    const cached = renderState.edgeEls.get(index);
+    if (el.tagName === "path") {
+      cached.path = el;
+    } else if (el.tagName === "text" && el.hasAttribute("data-edge-index")) {
+      cached.label = el;
+    } else if (el.tagName === "circle") {
+      cached.deleteCircle = el;
+    } else if (el.tagName === "text" && el.hasAttribute("data-edge-delete")) {
+      cached.deleteText = el;
+    }
+  });
+}
+
+function updateEdgeAt(index) {
+  const edge = graph.edges[index];
+  const cached = renderState.edgeEls.get(index);
+  if (!edge || !cached || !cached.path) {
+    return;
+  }
+
+  const geometry = edgeGeometry(edge);
+  if (!geometry) {
+    return;
+  }
+
+  cached.path.setAttribute("d", geometry.path);
+  if (cached.label) {
+    cached.label.setAttribute("x", geometry.midX);
+    cached.label.setAttribute("y", geometry.midY - 8);
+  }
+  if (cached.deleteCircle) {
+    cached.deleteCircle.setAttribute("cx", geometry.midX + 18);
+    cached.deleteCircle.setAttribute("cy", geometry.midY - 12);
+  }
+  if (cached.deleteText) {
+    cached.deleteText.setAttribute("x", geometry.midX + 18);
+    cached.deleteText.setAttribute("y", geometry.midY - 8.5);
+  }
+}
+
+function updateEdgesForNodeIds(nodeIds) {
+  const edgeIndexes = new Set();
+  nodeIds.forEach(nodeId => {
+    (graphIndex.edgesByNodeId.get(nodeId) || []).forEach(index => edgeIndexes.add(index));
+  });
+  edgeIndexes.forEach(updateEdgeAt);
 }
 
 function escapeXml(value) {
@@ -839,6 +985,11 @@ function startDrag(e, nodeId) {
     oy: node.y
   };
 
+  const el = renderState.nodeEls.get(nodeId);
+  if (el) {
+    el.classList.add("is-dragging");
+  }
+
   window.addEventListener("pointermove", onPointerMove);
   window.addEventListener("pointerup", stopPointerOps);
 }
@@ -857,6 +1008,11 @@ function startResize(e, nodeId) {
     oh: Number(node.height) || MIN_NODE_HEIGHT
   };
 
+  const el = renderState.nodeEls.get(nodeId);
+  if (el) {
+    el.classList.add("is-dragging");
+  }
+
   window.addEventListener("pointermove", onPointerMove);
   window.addEventListener("pointerup", stopPointerOps);
 }
@@ -873,6 +1029,34 @@ function startPan(e) {
   window.addEventListener("pointerup", stopPointerOps);
 }
 
+function affectedNodeIds(nodeId) {
+  return [nodeId, ...descendantsOf(nodeId)];
+}
+
+function updateNodeElementGeometry(node) {
+  const el = renderState.nodeEls.get(node.id);
+  if (!el) {
+    return;
+  }
+  el.style.left = `${node.x}px`;
+  el.style.top = `${node.y}px`;
+  el.style.width = `${node.width}px`;
+  el.style.height = `${node.height}px`;
+  const actionCount = el.querySelectorAll(".node-actions .icon").length;
+  applyNodeSizing(el, node, actionCount);
+}
+
+function schedulePointerFrame(fn) {
+  if (pendingPointerFrame) {
+    return;
+  }
+  pendingPointerFrame = true;
+  requestAnimationFrame(() => {
+    pendingPointerFrame = false;
+    fn();
+  });
+}
+
 function onPointerMove(e) {
   if (resizing) {
     const node = nodeById(resizing.nodeId);
@@ -886,7 +1070,11 @@ function onPointerMove(e) {
     node.width = clamp(Math.round(resizing.ow + dw), MIN_NODE_WIDTH, MAX_NODE_WIDTH);
     node.height = clamp(Math.round(resizing.oh + dh), MIN_NODE_HEIGHT, MAX_NODE_HEIGHT);
     node.manualSize = true;
-    render();
+    const ids = affectedNodeIds(node.id);
+    schedulePointerFrame(() => {
+      updateNodeElementGeometry(node);
+      updateEdgesForNodeIds(ids);
+    });
     return;
   }
 
@@ -912,7 +1100,11 @@ function onPointerMove(e) {
       }
     }
 
-    render();
+    const ids = affectedNodeIds(node.id);
+    schedulePointerFrame(() => {
+      updateNodeElementGeometry(node);
+      updateEdgesForNodeIds(ids);
+    });
     return;
   }
 
@@ -924,6 +1116,14 @@ function onPointerMove(e) {
 }
 
 function stopPointerOps() {
+  const activeNodeId = (dragging && dragging.nodeId) || (resizing && resizing.nodeId);
+  if (activeNodeId) {
+    const el = renderState.nodeEls.get(activeNodeId);
+    if (el) {
+      el.classList.remove("is-dragging");
+    }
+    updateStatus();
+  }
   dragging = null;
   resizing = null;
   panning = null;
@@ -945,6 +1145,33 @@ function zoomBy(delta) {
   const viewport = document.getElementById("viewport");
   const rect = viewport.getBoundingClientRect();
   zoomAt(rect.left + rect.width / 2, rect.top + rect.height / 2, delta);
+}
+
+function panBy(deltaX, deltaY) {
+  view.x -= deltaX;
+  view.y -= deltaY;
+  applyView();
+}
+
+function wheelDeltaToPixels(e, viewport) {
+  if (e.deltaMode === WheelEvent.DOM_DELTA_LINE) {
+    return {
+      x: e.deltaX * WHEEL_LINE_PX,
+      y: e.deltaY * WHEEL_LINE_PX
+    };
+  }
+
+  if (e.deltaMode === WheelEvent.DOM_DELTA_PAGE) {
+    return {
+      x: e.deltaX * viewport.clientWidth,
+      y: e.deltaY * viewport.clientHeight
+    };
+  }
+
+  return {
+    x: e.deltaX,
+    y: e.deltaY
+  };
 }
 
 function zoomAt(clientX, clientY, delta) {
@@ -1394,6 +1621,8 @@ function setupUiEvents() {
   document.getElementById("saveNowBtn").addEventListener("click", saveGraphNow);
   document.getElementById("themeToggle").addEventListener("click", toggleTheme);
   document.getElementById("fitViewBtn").addEventListener("click", fitView);
+  document.getElementById("zoomOutBtn").addEventListener("click", () => zoomBy(-0.12));
+  document.getElementById("zoomInBtn").addEventListener("click", () => zoomBy(0.12));
   document.getElementById("saveNoteBtn").addEventListener("click", saveNote);
   document.getElementById("closeNotesBtn").addEventListener("click", closeNotes);
   document.getElementById("fileInput").addEventListener("change", e => {
@@ -1450,8 +1679,14 @@ viewport.addEventListener("pointerdown", e => {
 
 viewport.addEventListener("wheel", e => {
   e.preventDefault();
-  const step = e.deltaY > 0 ? -0.08 : 0.08;
-  zoomAt(e.clientX, e.clientY, step);
+  if (e.ctrlKey) {
+    const step = e.deltaY > 0 ? -0.08 : 0.08;
+    zoomAt(e.clientX, e.clientY, step);
+    return;
+  }
+
+  const delta = wheelDeltaToPixels(e, viewport);
+  panBy(delta.x, delta.y);
 }, { passive: false });
 
 async function initializeAppState() {
