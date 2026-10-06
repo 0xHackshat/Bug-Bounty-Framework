@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "Mind Palace",
+  "description": "Create, edit, and save interactive flowcharts and mind maps.",
+  "version": "1.0.0",
+  "icons": {
+    "16": "icons/icon16.png",
+    "18": "icons/icon18.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_title": "Open Mind Palace",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "18": "icons/icon18.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "permissions": ["storage"],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "mind-palace@example.local",
+      "strict_min_version": "140.0",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
+    },
+    "gecko_android": {
+      "strict_min_version": "142.0"
+    }
+  }
+}
