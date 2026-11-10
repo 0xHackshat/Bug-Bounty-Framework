@@ -74,3 +74,24 @@ html,body,#root{height:100%;min-height:0;overflow:hidden}
 .note-color-picker{display:flex;align-items:center;gap:9px;margin:17px 0 20px}
 .note-color-picker .swatch{flex:none}
 .save-note{width:100%}
+
+/* Expanded note panel and resilient color palette layout. */
+.inspector{width:50vw;min-width:460px}
+.inspector-content{height:100%;display:flex;flex-direction:column;min-height:0}
+.inspector-content>.note-title-input{flex:0 0 auto;width:100%}
+.inspector-content>.note-editor{flex:1 1 auto;width:100%;min-height:220px;max-height:none;resize:vertical}
+.note-color-picker{flex:0 0 auto;flex-wrap:wrap;gap:8px;margin:14px 0 16px}
+.note-color-picker .swatch{width:24px;height:24px;position:relative}
+.note-color-picker .swatch.chosen{outline:2px solid #3984ee;outline-offset:2px;box-shadow:0 0 0 3px #fff}
+.dark-theme .note-color-picker .swatch.chosen{box-shadow:0 0 0 3px #0b0c0e}
+.inspector .save-note{flex:0 0 auto}
+@media(max-width:760px){.inspector{width:min(94vw,560px);min-width:0}.inspector-content{height:100%}.inspector-content>.note-editor{min-height:180px;max-height:calc(76vh - 150px)}}
+.sync-dialog{width:min(92vw,520px);max-height:90vh;overflow:auto;background:var(--panel,#fff);color:var(--text,#18202b);border:1px solid var(--border,#dce2e9);border-radius:16px;padding:22px;box-shadow:0 24px 80px #0004;display:flex;flex-direction:column;gap:12px}
+.sync-dialog label{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600}
+.sync-dialog input{width:100%;padding:10px 12px;border:1px solid var(--border,#dce2e9);border-radius:9px;background:var(--input-bg,#fff);color:inherit;font:inherit}
+.sync-dialog .sync-help{margin:0;color:var(--muted,#667080);font-size:12px;line-height:1.55}
+.sync-dialog code{font-size:11px;overflow-wrap:anywhere}
+.sync-dialog .sync-error{margin:0;color:#c23b3b;font-size:12px}
+.dark-theme .sync-dialog{--panel:#17191d;--text:#e7e8ea;--border:#34373d;--input-bg:#202227;--muted:#a6a9af}
+.dark-theme .sync-dialog .sync-error{color:#ff8585}
+@media(max-width:760px){.sync-dialog{padding:18px}.sync-dialog .dialog-actions{flex-wrap:wrap}.sync-dialog .dialog-actions .toolbar-spacer{display:none}}
