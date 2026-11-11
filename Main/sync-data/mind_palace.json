@@ -1,25 +1,1171 @@
 {
   "nodes": [
-    { "id": "palace-root", "type": "card", "position": { "x": 456, "y": 34 }, "data": { "title": "MIND PALACE", "kind": "plain", "color": "#ffffff", "note": "A personal map for ideas, projects, and things worth remembering." } },
-    { "id": "palace-work", "type": "card", "position": { "x": 126, "y": 184 }, "data": { "title": "WORK & PROJECTS", "kind": "stage", "color": "#fff500" } },
-    { "id": "palace-learning", "type": "card", "position": { "x": 456, "y": 184 }, "data": { "title": "LEARNING", "kind": "stage", "color": "#fff500" } },
-    { "id": "palace-life", "type": "card", "position": { "x": 786, "y": 184 }, "data": { "title": "LIFE & IDEAS", "kind": "stage", "color": "#fff500" } },
-    { "id": "palace-work-focus", "type": "card", "position": { "x": 74, "y": 326 }, "data": { "title": "Current focus", "kind": "input", "color": "#a8cbff", "note": "The most important task to move forward this week." } },
-    { "id": "palace-work-next", "type": "card", "position": { "x": 266, "y": 326 }, "data": { "title": "Next actions", "kind": "input", "color": "#a8cbff" } },
-    { "id": "palace-learn-topics", "type": "card", "position": { "x": 404, "y": 326 }, "data": { "title": "Topics to explore", "kind": "technique", "color": "#c9f3dc" } },
-    { "id": "palace-learn-notes", "type": "card", "position": { "x": 596, "y": 326 }, "data": { "title": "Notes & references", "kind": "technique", "color": "#c9f3dc" } },
-    { "id": "palace-life-goals", "type": "card", "position": { "x": 734, "y": 326 }, "data": { "title": "Goals", "kind": "input", "color": "#a8cbff" } },
-    { "id": "palace-life-spark", "type": "card", "position": { "x": 926, "y": 326 }, "data": { "title": "Ideas to revisit", "kind": "input", "color": "#a8cbff" } }
+    {
+      "id": "0001",
+      "type": "card",
+      "position": {
+        "x": 30.4991607371618,
+        "y": 33.3653584840156
+      },
+      "data": {
+        "title": "🧠 The Only Brain Cell",
+        "kind": "plain",
+        "color": "#ffffff",
+        "note": "The only functional Brain Cell",
+        "emoji": "🤯🧠"
+      },
+      "measured": {
+        "width": 121,
+        "height": 27
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "node_1772217660368",
+      "type": "card",
+      "position": {
+        "x": -591.0754537193889,
+        "y": 189.34813615157955
+      },
+      "data": {
+        "title": "AI OSINT Investigation Agent",
+        "kind": "plain",
+        "color": "#ffffff",
+        "note": "",
+        "emoji": "💡🕵️"
+      },
+      "measured": {
+        "width": 148,
+        "height": 27
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "node_1772217710915",
+      "type": "card",
+      "position": {
+        "x": -11.654934773790131,
+        "y": -316.3803130530626
+      },
+      "data": {
+        "title": "AI and Automation in GE ARC",
+        "kind": "plain",
+        "color": "#ffffff",
+        "note": "",
+        "emoji": "💡💼"
+      },
+      "measured": {
+        "width": 149,
+        "height": 27
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "node_1772514935213",
+      "type": "card",
+      "position": {
+        "x": 870.5527659137905,
+        "y": 278.3139058738981
+      },
+      "data": {
+        "title": "CTF & Practice Labs",
+        "kind": "plain",
+        "color": "#ffffff",
+        "note": "CTF - \n        - CTF Times\n        - Try Hack me\n        - Hack the box\n        - pico CTF\n        ",
+        "emoji": "🚩"
+      },
+      "measured": {
+        "width": 116,
+        "height": 27
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "node_1772611939797",
+      "type": "card",
+      "position": {
+        "x": 927.469039703395,
+        "y": 44.22297901319365
+      },
+      "data": {
+        "title": "Red Teaming & Pentestting",
+        "kind": "plain",
+        "color": "#ffffff",
+        "note": "",
+        "emoji": "📍"
+      },
+      "measured": {
+        "width": 139,
+        "height": 27
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "node_1772612105084",
+      "type": "card",
+      "position": {
+        "x": 1153.6563875658148,
+        "y": 158.13948218219463
+      },
+      "data": {
+        "title": "Web App Mind map - WSTG",
+        "kind": "plain",
+        "color": "#ffffff",
+        "note": "",
+        "emoji": "🕸️"
+      },
+      "measured": {
+        "width": 144,
+        "height": 27
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "node_1772612211481",
+      "type": "card",
+      "position": {
+        "x": 765.6913028662318,
+        "y": -169.9891555446727
+      },
+      "data": {
+        "title": "Basic of AI **",
+        "kind": "plain",
+        "color": "#ffffff",
+        "note": "",
+        "emoji": "📚"
+      },
+      "measured": {
+        "width": 116,
+        "height": 27
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "node_1772616185609",
+      "type": "card",
+      "position": {
+        "x": 970.4338229632513,
+        "y": -148.3660504770356
+      },
+      "data": {
+        "title": "AWS Cloud Prac Certifiation",
+        "kind": "plain",
+        "color": "#ffffff",
+        "note": "",
+        "emoji": "🏫"
+      },
+      "measured": {
+        "width": 144,
+        "height": 27
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "node_1773249554402",
+      "type": "card",
+      "position": {
+        "x": -657.0270854409662,
+        "y": 110.92064890391997
+      },
+      "data": {
+        "title": "Learn to be Anonimus on the internet",
+        "kind": "plain",
+        "color": "#ffffff",
+        "note": "",
+        "emoji": "🤫🥷"
+      },
+      "measured": {
+        "width": 183,
+        "height": 27
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "node_1775016618716",
+      "type": "card",
+      "position": {
+        "x": 254.73978717812105,
+        "y": -310.9303569888982
+      },
+      "data": {
+        "title": "Job Switch",
+        "kind": "plain",
+        "color": "#ffffff",
+        "note": "----------Direct job post----------------------------\n1. Wellfound\n2. LinkedIn\n3. Instahyre\n4. Indeed\n\n---------Start up filter-----Carrier page post------\n1. Y Combinator\n2. Hacker News\n3. Cutshort\n4. Crunchbase\n5. Product Hunt\n\n------Defence orgs---------------------------------\n1. National Investigation Agency (NIA)\n2. Indian Cybercrime Coordination Centre (I4C)\n3. State Cyber Cells (Highly underrated)\n4. Data Security Council of India\n5. National Cyber Security Research Council\n6. Cyber Security Association of India\n",
+        "emoji": "🧑‍💼"
+      },
+      "measured": {
+        "width": 116,
+        "height": 27
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "node_1775447518665",
+      "type": "card",
+      "position": {
+        "x": -898.578501593851,
+        "y": 46.8438487658692
+      },
+      "data": {
+        "title": "Total Control of the data",
+        "kind": "plain",
+        "color": "#ffffff",
+        "note": "➡️ 3 email ID\n   ➖Main, Backup & a Burner Email ID\n   ➖Main & Backup alias\n\n➡️ offline password manager across device\n\n➡️ browser hardening across device\n\n",
+        "emoji": "🥷"
+      },
+      "measured": {
+        "width": 127,
+        "height": 27
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "node_1776922701147",
+      "type": "card",
+      "position": {
+        "x": 956.7006151662638,
+        "y": -229.92827068241007
+      },
+      "data": {
+        "title": "OWASP AI Testing Guide ",
+        "kind": "plain",
+        "color": "#ffffff",
+        "note": "",
+        "emoji": "â—ˆ"
+      },
+      "measured": {
+        "width": 130,
+        "height": 27
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "node_1776922805615",
+      "type": "card",
+      "position": {
+        "x": 957.3411537932393,
+        "y": -60.34087414601245
+      },
+      "data": {
+        "title": "Certified Red Team Professional (CRTP) ",
+        "kind": "plain",
+        "color": "#ffffff",
+        "note": "",
+        "emoji": "â—ˆ"
+      },
+      "measured": {
+        "width": 195,
+        "height": 27
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "node_1782127174273",
+      "type": "card",
+      "position": {
+        "x": 492.6755331281711,
+        "y": -39.862034040692514
+      },
+      "data": {
+        "title": "MindOS Update ++",
+        "kind": "plain",
+        "color": "#a8cbff",
+        "note": "",
+        "emoji": "🤯"
+      },
+      "measured": {
+        "width": 116,
+        "height": 27
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "node_1782127291566",
+      "type": "card",
+      "position": {
+        "x": 131.66506383187576,
+        "y": -163.09990030238902
+      },
+      "data": {
+        "title": "CareerOS Update ++",
+        "kind": "plain",
+        "color": "#a8cbff",
+        "note": "",
+        "emoji": "💪"
+      },
+      "measured": {
+        "width": 116,
+        "height": 27
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "node_1782127412862",
+      "type": "card",
+      "position": {
+        "x": -264.8592036447311,
+        "y": 112.6023768988552
+      },
+      "data": {
+        "title": "Brainstorm.exe",
+        "kind": "plain",
+        "color": "#a8cbff",
+        "note": "",
+        "emoji": "💡"
+      },
+      "measured": {
+        "width": 116,
+        "height": 27
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "node_1782130174235",
+      "type": "card",
+      "position": {
+        "x": 447.8430770273144,
+        "y": -377.3739090980187
+      },
+      "data": {
+        "title": "Interview Practice",
+        "kind": "plain",
+        "color": "#ffffff",
+        "note": "Walk through & Notes - https://portswigger.net/web-security/all-materials",
+        "emoji": "🙊"
+      },
+      "measured": {
+        "width": 116,
+        "height": 27
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "node_1782130237901",
+      "type": "card",
+      "position": {
+        "x": 773.8499083319887,
+        "y": 175.1793747850846
+      },
+      "data": {
+        "title": "Atual Hunting",
+        "kind": "plain",
+        "color": "#ffffff",
+        "note": "",
+        "emoji": "â—ˆ"
+      },
+      "measured": {
+        "width": 116,
+        "height": 27
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "node_1782130546793",
+      "type": "card",
+      "position": {
+        "x": -928.4787406301001,
+        "y": 160.68923405893045
+      },
+      "data": {
+        "title": "Private AI for specific purpose",
+        "kind": "plain",
+        "color": "#ffffff",
+        "note": "➡️ Writing assesstent ➖ Local\n\n➡️ Bug bounty AI & Plugin ➖ VPS",
+        "emoji": "🤑"
+      },
+      "measured": {
+        "width": 154,
+        "height": 27
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "node_1783239888243",
+      "type": "card",
+      "position": {
+        "x": 1004.1623996077778,
+        "y": 203.5654972967706
+      },
+      "data": {
+        "title": "BURP SUIT ** & Nuclei**",
+        "kind": "plain",
+        "color": "#ffffff",
+        "note": "",
+        "emoji": "â—ˆ"
+      },
+      "measured": {
+        "width": 130,
+        "height": 27
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "node_1783444130027",
+      "type": "card",
+      "position": {
+        "x": -552.9969861612333,
+        "y": 14.116125578103247
+      },
+      "data": {
+        "title": "Pathfinder",
+        "kind": "plain",
+        "color": "#ffffff",
+        "note": "",
+        "emoji": "â—ˆ"
+      },
+      "measured": {
+        "width": 116,
+        "height": 27
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "node_1786296588260",
+      "type": "card",
+      "position": {
+        "x": -1032.118883863677,
+        "y": 277.5887476174348
+      },
+      "data": {
+        "title": "Instagram Automation AI",
+        "kind": "plain",
+        "color": "#ffffff",
+        "note": "",
+        "emoji": "â—ˆ"
+      },
+      "measured": {
+        "width": 130,
+        "height": 27
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "node_1786296650520",
+      "type": "card",
+      "position": {
+        "x": -920.2299995196906,
+        "y": 345.0367967260896
+      },
+      "data": {
+        "title": "Claude Code & its uses",
+        "kind": "plain",
+        "color": "#ffffff",
+        "note": "",
+        "emoji": "â—ˆ"
+      },
+      "measured": {
+        "width": 123,
+        "height": 27
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "node_1788173847197",
+      "type": "card",
+      "position": {
+        "x": 452.1233494280431,
+        "y": 94.12346418245156
+      },
+      "data": {
+        "title": "Present",
+        "kind": "plain",
+        "color": "#f97316",
+        "note": "",
+        "emoji": "â—ˆ"
+      },
+      "measured": {
+        "width": 116,
+        "height": 27
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "node_1790048852716",
+      "type": "card",
+      "position": {
+        "x": -811.5554071366636,
+        "y": 277.3695037880888
+      },
+      "data": {
+        "title": "AI Huminizer",
+        "kind": "plain",
+        "color": "#ffffff",
+        "note": "",
+        "emoji": "â—ˆ"
+      },
+      "measured": {
+        "width": 116,
+        "height": 27
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "4d40e16b-6e69-4ae6-9747-21f9f6a4cb41",
+      "type": "card",
+      "position": {
+        "x": -46.04957525706466,
+        "y": 277.53326916969786
+      },
+      "data": {
+        "title": "Property - Row house or Flat",
+        "kind": "stage",
+        "color": "#ffffff",
+        "note": ""
+      },
+      "measured": {
+        "width": 147,
+        "height": 27
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "29721329-6e8e-4e8d-b870-859bacfdef68",
+      "type": "card",
+      "position": {
+        "x": -153.05595598321827,
+        "y": 395.6410325409058
+      },
+      "data": {
+        "title": "MAHADA",
+        "kind": "stage",
+        "color": "#c9f3dc",
+        "note": ""
+      },
+      "measured": {
+        "width": 116,
+        "height": 27
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "6d292cd5-3b5a-4ef6-bf1c-189b276bc750",
+      "type": "card",
+      "position": {
+        "x": -67.55546295675504,
+        "y": 473.74216660233685
+      },
+      "data": {
+        "title": "Loan Process & Calculation",
+        "kind": "stage",
+        "color": "#f4d7c9",
+        "note": ""
+      },
+      "measured": {
+        "width": 141,
+        "height": 27
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "b89bb92b-53bb-4a9c-a3b4-edafaae12203",
+      "type": "card",
+      "position": {
+        "x": 95.58673016822517,
+        "y": 396.6184145579026
+      },
+      "data": {
+        "title": "Find Properties",
+        "kind": "stage",
+        "color": "#fff500",
+        "note": ""
+      },
+      "measured": {
+        "width": 116,
+        "height": 27
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "1e3617b2-58d1-4824-aba0-d5d12b48a381",
+      "type": "card",
+      "position": {
+        "x": 333.57550091647033,
+        "y": 269.6714146624877
+      },
+      "data": {
+        "title": "Portswigger Academy",
+        "kind": "stage",
+        "color": "#c9f3dc",
+        "note": ""
+      },
+      "measured": {
+        "width": 119,
+        "height": 27
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "3cda8d59-6815-473d-adcf-2d790133196f",
+      "type": "card",
+      "position": {
+        "x": 492.8325628858039,
+        "y": 269.70974810058084
+      },
+      "data": {
+        "title": "THM Lab of each PSA Topic ",
+        "kind": "stage",
+        "color": "#2dd4bf",
+        "note": ""
+      },
+      "measured": {
+        "width": 144,
+        "height": 27
+      },
+      "selected": false,
+      "dragging": false
+    },
+    {
+      "id": "b4694065-3a89-4ac4-88b0-044a161bff95",
+      "type": "card",
+      "position": {
+        "x": 523.9971654751574,
+        "y": 203.4045227975168
+      },
+      "data": {
+        "title": "Resume, Patch-shepherd, Laptop, CTF ",
+        "kind": "stage",
+        "color": "#fff500",
+        "note": ""
+      },
+      "measured": {
+        "width": 190,
+        "height": 27
+      },
+      "selected": true,
+      "dragging": false
+    }
   ],
   "edges": [
-    { "id": "palace-e1", "source": "palace-root", "target": "palace-work", "sourceHandle": "source-left", "targetHandle": "target-top" },
-    { "id": "palace-e2", "source": "palace-root", "target": "palace-learning", "sourceHandle": "source-bottom", "targetHandle": "target-top" },
-    { "id": "palace-e3", "source": "palace-root", "target": "palace-life", "sourceHandle": "source-right", "targetHandle": "target-top" },
-    { "id": "palace-e4", "source": "palace-work", "target": "palace-work-focus", "sourceHandle": "source-bottom", "targetHandle": "target-top" },
-    { "id": "palace-e5", "source": "palace-work", "target": "palace-work-next", "sourceHandle": "source-bottom", "targetHandle": "target-top" },
-    { "id": "palace-e6", "source": "palace-learning", "target": "palace-learn-topics", "sourceHandle": "source-bottom", "targetHandle": "target-top" },
-    { "id": "palace-e7", "source": "palace-learning", "target": "palace-learn-notes", "sourceHandle": "source-bottom", "targetHandle": "target-top" },
-    { "id": "palace-e8", "source": "palace-life", "target": "palace-life-goals", "sourceHandle": "source-bottom", "targetHandle": "target-top" },
-    { "id": "palace-e9", "source": "palace-life", "target": "palace-life-spark", "sourceHandle": "source-bottom", "targetHandle": "target-top" }
+    {
+      "type": "bezier",
+      "style": {
+        "stroke": "#3984ee",
+        "strokeWidth": 2
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#3984ee"
+      },
+      "source": "0001",
+      "sourceHandle": "source-right",
+      "target": "node_1788173847197",
+      "targetHandle": "target-left",
+      "id": "xy-edge__0001source-right-node_1788173847197target-left",
+      "selected": false
+    },
+    {
+      "type": "bezier",
+      "style": {
+        "stroke": "#3984ee",
+        "strokeWidth": 2
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#3984ee"
+      },
+      "source": "0001",
+      "sourceHandle": "source-right",
+      "target": "node_1782127174273",
+      "targetHandle": "target-left",
+      "id": "xy-edge__0001source-right-node_1782127174273target-left"
+    },
+    {
+      "type": "bezier",
+      "style": {
+        "stroke": "#3984ee",
+        "strokeWidth": 2
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#3984ee"
+      },
+      "source": "node_1782127174273",
+      "sourceHandle": "source-right",
+      "target": "node_1772611939797",
+      "targetHandle": "target-left",
+      "id": "xy-edge__node_1782127174273source-right-node_1772611939797target-left"
+    },
+    {
+      "type": "bezier",
+      "style": {
+        "stroke": "#3984ee",
+        "strokeWidth": 2
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#3984ee"
+      },
+      "source": "node_1782127174273",
+      "sourceHandle": "source-right",
+      "target": "node_1772612211481",
+      "targetHandle": "target-left",
+      "id": "xy-edge__node_1782127174273source-right-node_1772612211481target-left"
+    },
+    {
+      "type": "bezier",
+      "style": {
+        "stroke": "#3984ee",
+        "strokeWidth": 2
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#3984ee"
+      },
+      "source": "node_1772612211481",
+      "sourceHandle": "source-right",
+      "target": "node_1776922701147",
+      "targetHandle": "target-left",
+      "id": "xy-edge__node_1772612211481source-right-node_1776922701147target-left"
+    },
+    {
+      "type": "bezier",
+      "style": {
+        "stroke": "#3984ee",
+        "strokeWidth": 2
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#3984ee"
+      },
+      "source": "node_1772612211481",
+      "sourceHandle": "source-right",
+      "target": "node_1772616185609",
+      "targetHandle": "target-left",
+      "id": "xy-edge__node_1772612211481source-right-node_1772616185609target-left"
+    },
+    {
+      "type": "bezier",
+      "style": {
+        "stroke": "#3984ee",
+        "strokeWidth": 2
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#3984ee"
+      },
+      "source": "node_1772611939797",
+      "sourceHandle": "source-bottom",
+      "target": "node_1782130237901",
+      "targetHandle": "target-top",
+      "id": "xy-edge__node_1772611939797source-bottom-node_1782130237901target-top"
+    },
+    {
+      "type": "bezier",
+      "style": {
+        "stroke": "#3984ee",
+        "strokeWidth": 2
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#3984ee"
+      },
+      "source": "node_1772611939797",
+      "sourceHandle": "source-bottom",
+      "target": "node_1772514935213",
+      "targetHandle": "target-top",
+      "id": "xy-edge__node_1772611939797source-bottom-node_1772514935213target-top"
+    },
+    {
+      "type": "bezier",
+      "style": {
+        "stroke": "#3984ee",
+        "strokeWidth": 2
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#3984ee"
+      },
+      "source": "node_1772611939797",
+      "sourceHandle": "source-bottom",
+      "target": "node_1783239888243",
+      "targetHandle": "target-top",
+      "id": "xy-edge__node_1772611939797source-bottom-node_1783239888243target-top"
+    },
+    {
+      "type": "bezier",
+      "style": {
+        "stroke": "#3984ee",
+        "strokeWidth": 2
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#3984ee"
+      },
+      "source": "node_1772611939797",
+      "sourceHandle": "source-bottom",
+      "target": "node_1772612105084",
+      "targetHandle": "target-top",
+      "id": "xy-edge__node_1772611939797source-bottom-node_1772612105084target-top"
+    },
+    {
+      "type": "bezier",
+      "style": {
+        "stroke": "#3984ee",
+        "strokeWidth": 2
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#3984ee"
+      },
+      "source": "node_1772611939797",
+      "sourceHandle": "source-top",
+      "target": "node_1776922805615",
+      "targetHandle": "target-bottom",
+      "id": "xy-edge__node_1772611939797source-top-node_1776922805615target-bottom"
+    },
+    {
+      "type": "bezier",
+      "style": {
+        "stroke": "#3984ee",
+        "strokeWidth": 2
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#3984ee"
+      },
+      "source": "node_1782127412862",
+      "sourceHandle": "source-left",
+      "target": "node_1783444130027",
+      "targetHandle": "target-right",
+      "id": "xy-edge__node_1782127412862source-left-node_1783444130027target-right"
+    },
+    {
+      "type": "bezier",
+      "style": {
+        "stroke": "#3984ee",
+        "strokeWidth": 2
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#3984ee"
+      },
+      "source": "node_1782127412862",
+      "sourceHandle": "source-left",
+      "target": "node_1773249554402",
+      "targetHandle": "target-right",
+      "id": "xy-edge__node_1782127412862source-left-node_1773249554402target-right"
+    },
+    {
+      "type": "bezier",
+      "style": {
+        "stroke": "#3984ee",
+        "strokeWidth": 2
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#3984ee"
+      },
+      "source": "node_1782127412862",
+      "sourceHandle": "source-left",
+      "target": "node_1772217660368",
+      "targetHandle": "target-right",
+      "id": "xy-edge__node_1782127412862source-left-node_1772217660368target-right"
+    },
+    {
+      "type": "bezier",
+      "style": {
+        "stroke": "#3984ee",
+        "strokeWidth": 2
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#3984ee"
+      },
+      "source": "node_1782130546793",
+      "sourceHandle": "source-bottom",
+      "target": "node_1786296588260",
+      "targetHandle": "target-top",
+      "id": "xy-edge__node_1782130546793source-bottom-node_1786296588260target-top"
+    },
+    {
+      "type": "bezier",
+      "style": {
+        "stroke": "#3984ee",
+        "strokeWidth": 2
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#3984ee"
+      },
+      "source": "node_1782130546793",
+      "sourceHandle": "source-bottom",
+      "target": "node_1786296650520",
+      "targetHandle": "target-top",
+      "id": "xy-edge__node_1782130546793source-bottom-node_1786296650520target-top"
+    },
+    {
+      "type": "bezier",
+      "style": {
+        "stroke": "#3984ee",
+        "strokeWidth": 2
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#3984ee"
+      },
+      "source": "node_1782130546793",
+      "sourceHandle": "source-bottom",
+      "target": "node_1790048852716",
+      "targetHandle": "target-top",
+      "id": "xy-edge__node_1782130546793source-bottom-node_1790048852716target-top"
+    },
+    {
+      "type": "bezier",
+      "style": {
+        "stroke": "#3984ee",
+        "strokeWidth": 2
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#3984ee"
+      },
+      "source": "node_1773249554402",
+      "sourceHandle": "source-left",
+      "target": "node_1775447518665",
+      "targetHandle": "target-right",
+      "id": "xy-edge__node_1773249554402source-left-node_1775447518665target-right"
+    },
+    {
+      "type": "bezier",
+      "style": {
+        "stroke": "#3984ee",
+        "strokeWidth": 2
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#3984ee"
+      },
+      "source": "node_1773249554402",
+      "sourceHandle": "source-left",
+      "target": "node_1782130546793",
+      "targetHandle": "target-right",
+      "id": "xy-edge__node_1773249554402source-left-node_1782130546793target-right"
+    },
+    {
+      "type": "bezier",
+      "style": {
+        "stroke": "#3984ee",
+        "strokeWidth": 2
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#3984ee"
+      },
+      "source": "0001",
+      "sourceHandle": "source-left",
+      "target": "node_1782127412862",
+      "targetHandle": "target-right",
+      "id": "xy-edge__0001source-left-node_1782127412862target-right"
+    },
+    {
+      "type": "bezier",
+      "style": {
+        "stroke": "#3984ee",
+        "strokeWidth": 2
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#3984ee"
+      },
+      "source": "node_1782127291566",
+      "sourceHandle": "source-top",
+      "target": "node_1772217710915",
+      "targetHandle": "target-bottom",
+      "id": "xy-edge__node_1782127291566source-top-node_1772217710915target-bottom"
+    },
+    {
+      "type": "bezier",
+      "style": {
+        "stroke": "#3984ee",
+        "strokeWidth": 2
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#3984ee"
+      },
+      "source": "node_1782127291566",
+      "sourceHandle": "source-top",
+      "target": "node_1775016618716",
+      "targetHandle": "target-bottom",
+      "id": "xy-edge__node_1782127291566source-top-node_1775016618716target-bottom"
+    },
+    {
+      "type": "bezier",
+      "style": {
+        "stroke": "#3984ee",
+        "strokeWidth": 2
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#3984ee"
+      },
+      "source": "node_1775016618716",
+      "sourceHandle": "source-right",
+      "target": "node_1782130174235",
+      "targetHandle": "target-left",
+      "id": "xy-edge__node_1775016618716source-right-node_1782130174235target-left"
+    },
+    {
+      "type": "bezier",
+      "style": {
+        "stroke": "#3984ee",
+        "strokeWidth": 2
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#3984ee"
+      },
+      "source": "0001",
+      "sourceHandle": "source-top",
+      "target": "node_1782127291566",
+      "targetHandle": "target-bottom",
+      "id": "xy-edge__0001source-top-node_1782127291566target-bottom"
+    },
+    {
+      "id": "quick-4d40e16b-6e69-4ae6-9747-21f9f6a4cb41-29721329-6e8e-4e8d-b870-859bacfdef68",
+      "source": "4d40e16b-6e69-4ae6-9747-21f9f6a4cb41",
+      "target": "29721329-6e8e-4e8d-b870-859bacfdef68",
+      "sourceHandle": "source-bottom",
+      "targetHandle": "target-top",
+      "type": "bezier",
+      "style": {
+        "stroke": "#3984ee",
+        "strokeWidth": 2
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#3984ee"
+      }
+    },
+    {
+      "id": "quick-4d40e16b-6e69-4ae6-9747-21f9f6a4cb41-6d292cd5-3b5a-4ef6-bf1c-189b276bc750",
+      "source": "4d40e16b-6e69-4ae6-9747-21f9f6a4cb41",
+      "target": "6d292cd5-3b5a-4ef6-bf1c-189b276bc750",
+      "sourceHandle": "source-bottom",
+      "targetHandle": "target-top",
+      "type": "bezier",
+      "style": {
+        "stroke": "#3984ee",
+        "strokeWidth": 2
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#3984ee"
+      }
+    },
+    {
+      "type": "bezier",
+      "style": {
+        "stroke": "#3984ee",
+        "strokeWidth": 2
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#3984ee"
+      },
+      "source": "4d40e16b-6e69-4ae6-9747-21f9f6a4cb41",
+      "sourceHandle": "source-bottom",
+      "target": "b89bb92b-53bb-4a9c-a3b4-edafaae12203",
+      "targetHandle": "target-top",
+      "id": "xy-edge__4d40e16b-6e69-4ae6-9747-21f9f6a4cb41source-bottom-b89bb92b-53bb-4a9c-a3b4-edafaae12203target-top"
+    },
+    {
+      "type": "bezier",
+      "style": {
+        "stroke": "#3984ee",
+        "strokeWidth": 2
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#3984ee"
+      },
+      "source": "0001",
+      "sourceHandle": "source-bottom",
+      "target": "4d40e16b-6e69-4ae6-9747-21f9f6a4cb41",
+      "targetHandle": "target-top",
+      "id": "xy-edge__0001source-bottom-4d40e16b-6e69-4ae6-9747-21f9f6a4cb41target-top"
+    },
+    {
+      "id": "quick-node_1788173847197-1e3617b2-58d1-4824-aba0-d5d12b48a381",
+      "source": "node_1788173847197",
+      "target": "1e3617b2-58d1-4824-aba0-d5d12b48a381",
+      "sourceHandle": "source-bottom",
+      "targetHandle": "target-top",
+      "type": "bezier",
+      "style": {
+        "stroke": "#3984ee",
+        "strokeWidth": 2
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#3984ee"
+      },
+      "selected": false
+    },
+    {
+      "type": "bezier",
+      "style": {
+        "stroke": "#3984ee",
+        "strokeWidth": 2
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#3984ee"
+      },
+      "source": "1e3617b2-58d1-4824-aba0-d5d12b48a381",
+      "sourceHandle": "source-right",
+      "target": "3cda8d59-6815-473d-adcf-2d790133196f",
+      "targetHandle": "target-left",
+      "id": "xy-edge__1e3617b2-58d1-4824-aba0-d5d12b48a381source-right-3cda8d59-6815-473d-adcf-2d790133196ftarget-left",
+      "selected": false
+    },
+    {
+      "id": "quick-node_1788173847197-b4694065-3a89-4ac4-88b0-044a161bff95",
+      "source": "node_1788173847197",
+      "target": "b4694065-3a89-4ac4-88b0-044a161bff95",
+      "sourceHandle": "source-bottom",
+      "targetHandle": "target-top",
+      "type": "bezier",
+      "style": {
+        "stroke": "#3984ee",
+        "strokeWidth": 2
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#3984ee"
+      },
+      "selected": false
+    }
   ]
 }
