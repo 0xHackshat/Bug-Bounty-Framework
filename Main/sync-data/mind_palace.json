@@ -1,0 +1,25 @@
+{
+  "nodes": [
+    { "id": "palace-root", "type": "card", "position": { "x": 456, "y": 34 }, "data": { "title": "MIND PALACE", "kind": "plain", "color": "#ffffff", "note": "A personal map for ideas, projects, and things worth remembering." } },
+    { "id": "palace-work", "type": "card", "position": { "x": 126, "y": 184 }, "data": { "title": "WORK & PROJECTS", "kind": "stage", "color": "#fff500" } },
+    { "id": "palace-learning", "type": "card", "position": { "x": 456, "y": 184 }, "data": { "title": "LEARNING", "kind": "stage", "color": "#fff500" } },
+    { "id": "palace-life", "type": "card", "position": { "x": 786, "y": 184 }, "data": { "title": "LIFE & IDEAS", "kind": "stage", "color": "#fff500" } },
+    { "id": "palace-work-focus", "type": "card", "position": { "x": 74, "y": 326 }, "data": { "title": "Current focus", "kind": "input", "color": "#a8cbff", "note": "The most important task to move forward this week." } },
+    { "id": "palace-work-next", "type": "card", "position": { "x": 266, "y": 326 }, "data": { "title": "Next actions", "kind": "input", "color": "#a8cbff" } },
+    { "id": "palace-learn-topics", "type": "card", "position": { "x": 404, "y": 326 }, "data": { "title": "Topics to explore", "kind": "technique", "color": "#c9f3dc" } },
+    { "id": "palace-learn-notes", "type": "card", "position": { "x": 596, "y": 326 }, "data": { "title": "Notes & references", "kind": "technique", "color": "#c9f3dc" } },
+    { "id": "palace-life-goals", "type": "card", "position": { "x": 734, "y": 326 }, "data": { "title": "Goals", "kind": "input", "color": "#a8cbff" } },
+    { "id": "palace-life-spark", "type": "card", "position": { "x": 926, "y": 326 }, "data": { "title": "Ideas to revisit", "kind": "input", "color": "#a8cbff" } }
+  ],
+  "edges": [
+    { "id": "palace-e1", "source": "palace-root", "target": "palace-work", "sourceHandle": "source-left", "targetHandle": "target-top" },
+    { "id": "palace-e2", "source": "palace-root", "target": "palace-learning", "sourceHandle": "source-bottom", "targetHandle": "target-top" },
+    { "id": "palace-e3", "source": "palace-root", "target": "palace-life", "sourceHandle": "source-right", "targetHandle": "target-top" },
+    { "id": "palace-e4", "source": "palace-work", "target": "palace-work-focus", "sourceHandle": "source-bottom", "targetHandle": "target-top" },
+    { "id": "palace-e5", "source": "palace-work", "target": "palace-work-next", "sourceHandle": "source-bottom", "targetHandle": "target-top" },
+    { "id": "palace-e6", "source": "palace-learning", "target": "palace-learn-topics", "sourceHandle": "source-bottom", "targetHandle": "target-top" },
+    { "id": "palace-e7", "source": "palace-learning", "target": "palace-learn-notes", "sourceHandle": "source-bottom", "targetHandle": "target-top" },
+    { "id": "palace-e8", "source": "palace-life", "target": "palace-life-goals", "sourceHandle": "source-bottom", "targetHandle": "target-top" },
+    { "id": "palace-e9", "source": "palace-life", "target": "palace-life-spark", "sourceHandle": "source-bottom", "targetHandle": "target-top" }
+  ]
+}
